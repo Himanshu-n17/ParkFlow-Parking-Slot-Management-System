@@ -33,7 +33,20 @@ const Login = () => {
 
   return (
     <AuthLayout>
-      <h3>Sign In</h3>
+      <div className="auth-tabs">
+        <button className="tab active">Sign In</button>
+        <Link to="/signup" className="tab">
+          Register
+        </Link>
+      </div>
+
+      <div className="demo-box">
+        <p>
+          <strong>Demo credentials</strong>
+        </p>
+        <p>User → user@parkiq.com / user123</p>
+        <p>Admin → admin@parkiq.com / admin123</p>
+      </div>
 
       <form onSubmit={handleLogin}>
         <input
@@ -42,6 +55,7 @@ const Login = () => {
           placeholder="Email Address"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
 
         <input
@@ -50,12 +64,13 @@ const Login = () => {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
         />
 
         <button className="auth-button">Sign In →</button>
       </form>
 
-      <p style={{ marginTop: "15px" }}>
+      <p className="auth-footer">
         No account? <Link to="/signup">Register</Link>
       </p>
     </AuthLayout>
