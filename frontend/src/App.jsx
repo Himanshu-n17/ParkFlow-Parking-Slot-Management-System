@@ -22,6 +22,8 @@ import BookSlot from "./pages/user/parking/BookSlot";
 import FindParking from "./pages/user/parking/FindParking";
 import UserProfile from "./pages/user/profile/UserProfile";
 
+import Landing from "./pages/Landing";
+
 import PrivateRoute from "./routes/PrivateRoute";
 import { Toaster } from "react-hot-toast";
 import UserProvider, { UserContext } from "./context/userContext";
@@ -53,7 +55,8 @@ const App = () => {
           </Route>
 
           {/* ROOT */}
-          <Route path="/" element={<Root />} />
+          {/* <Route path="/" element={<Root />} /> */}
+          <Route path="/" element={<Landing />} />
         </Routes>
       </Router>
 
