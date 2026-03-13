@@ -20,6 +20,17 @@ exports.vehicleEntry = async (req, res) => {
       });
     }
 
+    const activeBooking = await Booking.findOne({
+      vehicleNumber,
+      status: "active",
+    });
+
+    if (activeBooking) {
+      return res.status(400).json({
+        message: "Vehicle already parked",
+      });
+    }
+
     const booking = await Booking.create({
       user: userId,
       slot: slotId,
