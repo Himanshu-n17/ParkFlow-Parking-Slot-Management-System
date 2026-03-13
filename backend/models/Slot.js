@@ -15,10 +15,20 @@ const slotSchema = new mongoose.Schema(
       type: String,
     },
 
+    sensorId: {
+      type: String,
+      unique: true,
+    },
+
     status: {
       type: String,
       enum: ["free", "booked", "occupied"],
       default: "free",
+    },
+
+    currentVehicle: {
+      type: String,
+      default: null,
     },
   },
   { timestamps: true },

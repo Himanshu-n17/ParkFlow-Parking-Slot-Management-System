@@ -4,6 +4,8 @@ const connectDB = require("./config/db");
 require("dotenv").config();
 
 const authRoutes = require("./routes/authRoutes");
+const slotRoutes = require("./routes/slotRoutes");
+const bookingRoutes = require("./routes/bookingRoutes");
 
 const app = express();
 
@@ -13,6 +15,8 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/slots", slotRoutes);
+app.use("/api/bookings", bookingRoutes);
 
 app.get("/", (req, res) => {
   res.send("Smart Parking API Running 🚗");
