@@ -14,10 +14,18 @@ const bookingSchema = new mongoose.Schema(
 
     vehicleNumber: {
       type: String,
+      required: true,
+    },
+
+    bookingType: {
+      type: String,
+      enum: ["manual", "camera"],
+      default: "manual",
     },
 
     entryTime: {
       type: Date,
+      default: Date.now,
     },
 
     exitTime: {
@@ -30,6 +38,12 @@ const bookingSchema = new mongoose.Schema(
 
     cost: {
       type: Number,
+    },
+
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "paid"],
+      default: "pending",
     },
 
     status: {
