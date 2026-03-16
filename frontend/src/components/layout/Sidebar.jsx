@@ -88,13 +88,15 @@ const Sidebar = () => {
       </div>
 
       {/* USER INFO */}
-      <div className="sidebar-user">
-        {/* <div className="avatar">{user?.name?.charAt(0) || "A"}</div> */}
 
+      <div className="sidebar-user">
         <div className="user-info">
           <div className="avatar">{user?.name?.charAt(0) || "A"}</div>
-          <p>{user?.name || "Arjun Mehta"}</p>
-          <span>{user?.email || "user@parkiq.com"}</span>
+
+          <div className="user-text">
+            <p>{user?.name || "Arjun Mehta"}</p>
+            <span>{user?.email || "user@parkiq.com"}</span>
+          </div>
         </div>
 
         <button
