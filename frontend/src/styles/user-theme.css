@@ -1,0 +1,28 @@
+.user-theme {
+  background: #f6f8ff;
+  color: #1e293b;
+}
+
+.user-theme .sidebar {
+  background: white;
+  border-right: 1px solid #e5e7eb;
+}
+
+.user-theme .navbar {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.user-theme .sidebar-nav a {
+  color: #64748b;
+}
+
+.user-theme .sidebar-nav a.active {
+  background: #eef2ff;
+  color: #4f6df5;
+}
+
+.user-theme .avatar {
+  background: #4f6df5;
+  color: white;
+}

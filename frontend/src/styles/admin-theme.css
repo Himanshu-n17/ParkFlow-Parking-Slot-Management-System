@@ -1,0 +1,67 @@
+.admin-theme {
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+/* SIDEBAR */
+
+.admin-theme .sidebar {
+  background: #0b1120;
+  border-right: 1px solid #1f2937;
+}
+
+/* NAVBAR */
+
+.admin-theme .navbar {
+  background: #0f172a;
+  border-bottom: 1px solid #1f2937;
+}
+
+/* PAGE CONTENT */
+
+.admin-theme .dashboard-content {
+  background: #0f172a;
+}
+
+/* LINKS */
+
+.admin-theme .sidebar-nav a {
+  color: #94a3b8;
+}
+
+.admin-theme .sidebar-nav a:hover {
+  background: #1e293b;
+  color: white;
+}
+
+.admin-theme .sidebar-nav a.active {
+  background: #1e293b;
+  color: white;
+}
+
+/* BADGE */
+
+.admin-theme .sidebar-badge {
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: #cbd5f5;
+}
+
+/* AVATAR */
+
+.admin-theme .avatar {
+  background: #6366f1;
+  color: white;
+}
+
+/* NAVBAR PILLS */
+
+.admin-theme .live-pill {
+  background: #064e3b;
+  color: #34d399;
+}
+
+.admin-theme .wallet-pill {
+  background: #1e293b;
+  color: #a5b4fc;
+}

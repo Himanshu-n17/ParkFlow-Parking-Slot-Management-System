@@ -1,7 +1,8 @@
 import React from "react";
+import DashboardLayout from '../../../components/layout/DashboardLayout'
 
 const BookSlot = () => {
-  return <div>BookSlot</div>;
+  return <DashboardLayout>BookSlot</DashboardLayout>;
 };
 
 export default BookSlot;

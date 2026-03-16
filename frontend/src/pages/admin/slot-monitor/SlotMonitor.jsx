@@ -1,8 +1,9 @@
 import React from 'react'
+import DashboardLayout from '../../../components/layout/DashboardLayout'
 
 const SlotMonitor = () => {
   return (
-    <div>SlotMonitor</div>
+    <DashboardLayout>SlotMonitor</DashboardLayout>
   )
 }
 
