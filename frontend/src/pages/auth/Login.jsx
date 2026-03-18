@@ -2,7 +2,9 @@ import React, { useState, useContext } from "react";
 import AuthLayout from "../../components/auth/AuthLayout";
 import { UserContext } from "../../context/userContext";
 import { useNavigate, Link } from "react-router-dom";
+import toast from "react-hot-toast";
 import "../../styles/auth.css";
+import { loginUser } from "../../services/authService";
 
 const Login = () => {
   const { setUser } = useContext(UserContext);
@@ -10,24 +12,57 @@ const Login = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = (e) => {
+  const validate = () => {
+    let newErrors = {};
+
+    if (!email) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = "Invalid email format";
+    }
+
+    if (!password) {
+      newErrors.password = "Password is required";
+    } else if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    const role = email.includes("admin") ? "admin" : "user";
+    if (!validate()) return;
+    try {
+      setLoading(true);
 
-    const userData = {
-      email,
-      role,
-    };
+      const data = await loginUser({
+        email,
+        password,
+      });
 
-    localStorage.setItem("user", JSON.stringify(userData));
-    setUser(userData);
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
-    if (role === "admin") {
-      navigate("/admin/dashboard");
-    } else {
-      navigate("/user/dashboard");
+      setUser(data.user);
+      toast.success("Login successful 🚀");
+
+      if (data.user.role === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/user/dashboard");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -40,34 +75,42 @@ const Login = () => {
         </Link>
       </div>
 
-      <div className="demo-box">
-        <p>
-          <strong>Demo credentials</strong>
-        </p>
-        <p>User → user@parkiq.com / user123</p>
-        <p>Admin → admin@parkiq.com / admin123</p>
-      </div>
-
       <form onSubmit={handleLogin}>
         <input
-          className="auth-input"
+          className={`auth-input ${errors.email ? "input-error" : ""}`}
           type="email"
           placeholder="Email Address"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setErrors((prev) => ({ ...prev, email: "" }));
+          }}
         />
+        {errors.email && <p className="error-text">{errors.email}</p>}
 
-        <input
-          className="auth-input"
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <div className="password-field">
+          <input
+            className={`auth-input ${errors.password ? "input-error" : ""}`}
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setErrors((prev) => ({ ...prev, password: "" }));
+            }}
+          />
+          <span
+            className="toggle-password"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? "🙈" : "👁"}
+          </span>
+        </div>
+        {errors.password && <p className="error-text">{errors.password}</p>}
 
-        <button className="auth-button">Sign In →</button>
+        <button className="auth-button">
+          {loading ? "Signing in..." : "Sign In →"}
+        </button>
       </form>
 
       <p className="auth-footer">

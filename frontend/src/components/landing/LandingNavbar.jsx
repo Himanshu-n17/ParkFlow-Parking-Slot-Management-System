@@ -15,7 +15,7 @@ const LandingNavbar = () => {
           Login
         </button>
 
-        <button className="btn-primary" onClick={() => navigate("/login")}>
+        <button className="btn-primary" onClick={() => navigate("/signup")}>
           Register →
         </button>
       </div>
