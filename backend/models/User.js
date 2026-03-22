@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      // required: true,
     },
 
     email: {
@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema(
 
     password: {
       type: String,
-      required: true,
+      // required: true,
     },
 
     role: {
@@ -32,6 +32,14 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+
+    otp: String,
+    otpExpiry: Date,
   },
   { timestamps: true },
 );
