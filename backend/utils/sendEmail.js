@@ -30,7 +30,7 @@ const sendEmail = async (email, otp, username = "User") => {
         ">
         
           <h2 style="color:#2c3e50; text-align:center;">
-            🚗 Smart Parking Management System
+            🚗 ParkFlow - Smart Parking Management System
           </h2>
 
           <p>Hello <strong>${username}</strong>,</p>
