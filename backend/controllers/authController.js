@@ -42,7 +42,7 @@ exports.sendOtp = async (req, res) => {
       { upsert: true, new: true },
     );
 
-    await sendEmail(email, otp);
+    await sendEmail(email, otp, name);
 
     res.json({
       message: "OTP sent successfully",
