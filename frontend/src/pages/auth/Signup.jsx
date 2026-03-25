@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { registerUser } from "../../services/authService";
+import { sendOtp, verifyOtp } from "../../services/authService";
 import AuthLayout from "../../components/auth/AuthLayout";
 import "../../styles/auth.css";
 import toast from "react-hot-toast";
@@ -16,6 +16,8 @@ const Signup = () => {
   const [adminKey, setAdminKey] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState("");
 
   const validate = () => {
     let newErrors = {};
@@ -43,10 +45,53 @@ const Signup = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // const handleSignup = async (e) => {
+  //   e.preventDefault();
+
+  //   if (!validate()) return;
+  //   try {
+  //     setLoading(true);
+
+  //     const payload = {
+  //       name,
+  //       email,
+  //       password,
+  //       role,
+  //     };
+
+  //     // if admin → send adminKey
+  //     if (role === "admin") {
+  //       payload.adminKey = adminKey;
+  //     }
+
+  //     const data = await registerUser(payload);
+  //     toast.success("Register successful 🚀");
+
+  //     if (data.token) {
+  //       localStorage.setItem("token", data.token);
+  //       localStorage.setItem("user", JSON.stringify(data.user));
+
+  //       if (data.user.role === "admin") {
+  //         navigate("/admin/dashboard");
+  //       } else {
+  //         navigate("/user/dashboard");
+  //       }
+  //     } else {
+  //       navigate("/login");
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     toast.error(error.response?.data?.message || "Signup failed");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleSignup = async (e) => {
     e.preventDefault();
 
     if (!validate()) return;
+
     try {
       setLoading(true);
 
@@ -57,34 +102,59 @@ const Signup = () => {
         role,
       };
 
-      // if admin → send adminKey
       if (role === "admin") {
         payload.adminKey = adminKey;
       }
 
-      const data = await registerUser(payload);
-      toast.success("Register successful 🚀");
+      // 🔥 Step 1 → Send OTP
+      await sendOtp(payload);
 
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
+      toast.success("OTP sent to your email 📩");
 
-        if (data.user.role === "admin") {
-          navigate("/admin/dashboard");
-        } else {
-          navigate("/user/dashboard");
-        }
-      } else {
-        navigate("/login");
-      }
+      setOtpSent(true);
     } catch (error) {
-      console.error(error);
-      toast.error(error.response?.data?.message || "Signup failed");
+      toast.error(error.response?.data?.message || "Failed to send OTP");
     } finally {
       setLoading(false);
     }
   };
 
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+
+      const payload = {
+        name,
+        email,
+        password,
+        role,
+        otp,
+      };
+
+      if (role === "admin") {
+        payload.adminKey = adminKey;
+      }
+
+      const data = await verifyOtp(payload);
+
+      toast.success("Account created successfully 🚀");
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      if (data.user.role === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/user/dashboard");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Invalid OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <AuthLayout>
       {/* Tabs */}
@@ -115,73 +185,102 @@ const Signup = () => {
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSignup}>
-        <input
-          className={`auth-input ${errors.name ? "input-error" : ""}`}
-          type="text"
-          placeholder="Full Name"
-          value={name}
-          onChange={(e) => {
-            setName(e.target.value);
-            setErrors((prev) => ({ ...prev, name: "" }));
-          }}
-        />
-        {errors.name && <p className="error-text">{errors.name}</p>}
-
-        <input
-          className={`auth-input ${errors.email ? "input-error" : ""}`}
-          type="email"
-          placeholder="Email Address"
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-            setErrors((prev) => ({ ...prev, email: "" }));
-          }}
-        />
-        {errors.email && <p className="error-text">{errors.email}</p>}
-
-        <div className="password-field">
+      {!otpSent ? (
+        <form onSubmit={handleSignup}>
           <input
-            className={`auth-input ${errors.password ? "input-error" : ""}`}
-            type={showPassword ? "text" : "password"}
-            placeholder="Password"
-            value={password}
+            className={`auth-input ${errors.name ? "input-error" : ""}`}
+            type="text"
+            placeholder="Full Name"
+            value={name}
             onChange={(e) => {
-              setPassword(e.target.value);
-              setErrors((prev) => ({ ...prev, password: "" }));
+              setName(e.target.value);
+              setErrors((prev) => ({ ...prev, name: "" }));
             }}
           />
-          <span
-            className="toggle-password"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? "🙈" : "👁"}
-          </span>
-        </div>
-        {errors.password && <p className="error-text">{errors.password}</p>}
+          {errors.name && <p className="error-text">{errors.name}</p>}
 
-        {role === "admin" && (
-          <>
+          <input
+            className={`auth-input ${errors.email ? "input-error" : ""}`}
+            type="email"
+            placeholder="Email Address"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setErrors((prev) => ({ ...prev, email: "" }));
+            }}
+          />
+          {errors.email && <p className="error-text">{errors.email}</p>}
+
+          <div className="password-field">
             <input
-              className={`auth-input ${errors.name ? "input-error" : ""}`}
-              type="password"
-              placeholder="Admin Registration Key"
-              value={adminKey}
+              className={`auth-input ${errors.password ? "input-error" : ""}`}
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
               onChange={(e) => {
-                setAdminKey(e.target.value);
-                setErrors((prev) => ({ ...prev, adminKey: "" }));
+                setPassword(e.target.value);
+                setErrors((prev) => ({ ...prev, password: "" }));
               }}
             />
-            {errors.adminKey && <p className="error-text">{errors.adminKey}</p>}
-          </>
-        )}
+            <span
+              className="toggle-password"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? "🙈" : "👁"}
+            </span>
+          </div>
+          {errors.password && <p className="error-text">{errors.password}</p>}
 
-        <button className="auth-button" disabled={loading}>
-          {loading
-            ? "Creating Account..."
-            : `Register as ${role === "admin" ? "Admin" : "User"} →`}
-        </button>
-      </form>
+          {role === "admin" && (
+            <>
+              <input
+                className={`auth-input ${errors.name ? "input-error" : ""}`}
+                type="password"
+                placeholder="Admin Registration Key"
+                value={adminKey}
+                onChange={(e) => {
+                  setAdminKey(e.target.value);
+                  setErrors((prev) => ({ ...prev, adminKey: "" }));
+                }}
+              />
+              {errors.adminKey && (
+                <p className="error-text">{errors.adminKey}</p>
+              )}
+            </>
+          )}
+
+          <button className="auth-button" disabled={loading}>
+            {loading
+              ? "Creating Account..."
+              : `Register as ${role === "admin" ? "Admin" : "User"} →`}
+          </button>
+        </form>
+      ) : (
+        <form onSubmit={handleVerifyOtp}>
+          <input
+            className="auth-input"
+            type="text"
+            placeholder="Enter OTP"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            required
+          />
+
+          <button className="auth-button" disabled={loading}>
+            {loading ? "Verifying..." : "Verify OTP →"}
+          </button>
+
+          <p className="auth-footer">
+            Didn’t receive OTP?{" "}
+            <span
+              onClick={handleSignup}
+              style={{ color: "#4f6df5", cursor: "pointer" }}
+            >
+              Resend
+            </span>
+          </p>
+        </form>
+      )}
 
       <p className="auth-footer">
         Already have an account? <Link to="/login">Login</Link>
