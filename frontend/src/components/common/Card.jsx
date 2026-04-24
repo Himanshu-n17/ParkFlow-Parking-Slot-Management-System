@@ -1,0 +1,33 @@
+export const Card = ({ title, subtitle, children }) => {
+  return (
+    <div className="dashboard-card">
+      <div className="dashboard-card-header">
+        <h3>{title}</h3>
+
+        {subtitle && (
+          <span className="dashboard-card-subtitle">{subtitle}</span>
+        )}
+      </div>
+
+      <div className="dashboard-card-body">{children}</div>
+    </div>
+  );
+};
+
+export const StatCard = ({
+  title,
+  value,
+  icon,
+  color = "default",
+}) => {
+  return (
+    <div className={`stat-card stat-${color}`}>
+      <div className="stat-icon">{icon}</div>
+
+      <div className="stat-content">
+        <h2>{value}</h2>
+        <p className="stat-title">{title}</p>
+      </div>
+    </div>
+  );
+};
