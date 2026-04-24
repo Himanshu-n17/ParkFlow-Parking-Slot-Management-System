@@ -1,0 +1,111 @@
+.slot-distribution-card {
+  background: #0f172a;
+  border-radius: 16px;
+  padding: 16px; 
+  height: fit-content;
+}
+
+.slot-title {
+  color: white;
+  font-size: 16px; 
+  margin-bottom: 14px;
+}
+
+.slot-progress-row {
+  margin-bottom: 10px;
+}
+
+.slot-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #9ca3af;
+  margin-bottom: 4px;
+}
+
+.progress-bar {
+  height: 4px;
+  width: 100%;
+  background: #1e293b;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.6s ease;
+}
+
+.progress-fill.available {
+  background: #10b981;
+}
+
+.progress-fill.occupied {
+  background: #ef4444;
+}
+
+.progress-fill.reserved {
+  background: #f59e0b;
+}
+
+.mini-analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px; /* reduced from 12px */
+  margin-top: 14px;
+}
+
+.mini-card {
+  background: #111827;
+  border-radius: 14px;
+  padding: 10px; /* reduced */
+  height: auto; /* FIX: removes forced tall cards */
+  min-height: 80px; /* keeps structure clean */
+  text-align: center;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.mini-card:hover {
+  transform: translateY(-3px);
+  background: #1f2937;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.mini-icon {
+  font-size: 16px; /* reduced */
+  margin-bottom: 4px;
+}
+
+.mini-card h4 {
+  color: white;
+  font-size: 14px;
+  margin-bottom: 1px;
+}
+
+.mini-card p {
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+.mini-card span {
+  color: #6b7280;
+  font-size: 10px;
+}
+
+.mini-icon.trophy {
+  color: #facc15;
+}
+
+.mini-icon.clock {
+  color: #38bdf8;
+}
+
+.mini-icon.turnover {
+  color: #a78bfa;
+}
+
+.mini-icon.accuracy {
+  color: #10b981;
+}

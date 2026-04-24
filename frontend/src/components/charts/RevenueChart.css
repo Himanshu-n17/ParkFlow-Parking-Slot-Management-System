@@ -1,0 +1,21 @@
+.weekly-revenue-card {
+  background: #0f172a;
+  padding: 4px;
+  border-radius: 16px;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.chart-header h3 {
+  color: white;
+  font-size: 18px;
+}
+
+.chart-header span {
+  color: #9ca3af;
+  font-size: 13px;
+}
