@@ -12,6 +12,7 @@ body {
 
 .dashboard-main {
   flex: 1;
+  margin-left: 230px;
   display: flex;
   flex-direction: column;
 }
@@ -25,6 +26,10 @@ body {
 
 .sidebar {
   width: 220px;
+  height: 96vh;
+  position: fixed;
+  top: 0;
+  left: 0;
   background: white;
   border-right: 1px solid #e5e7eb;
   display: flex;

@@ -65,3 +65,145 @@
   background: #1e293b;
   color: #a5b4fc;
 }
+
+/* Dashboard */
+.admin-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: minmax(120px, auto);
+  gap: 20px;
+  align-items: start;
+}
+
+
+.weekly-revenue {
+  grid-column: span 3;
+  background: #0f172a;
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.system-status {
+  grid-column: span 1;
+  background: #0f172a;
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.peak-hours {
+  grid-column: span 2;
+  background: #0f172a;
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.slot-distribution {
+  grid-column: span 2;
+  background: #0f172a;
+  border-radius: 16px;
+  padding: 20px;
+}
+
+/* Dashboard Card */
+.dashboard-card {
+  background: #0b1220;
+  border-radius: 18px;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.02),
+    0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.dashboard-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.dashboard-card-header h3 {
+  color: #e5e7eb;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.dashboard-card-subtitle {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.dashboard-card-body {
+  width: 100%;
+}
+
+/*   STAT CARDS (TOP DASHBOARD ROW) */
+
+.stat-card {
+  background: #0b1220;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  min-height: 90px;
+}
+
+.stat-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+}
+
+.stat-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.stat-content h2 {
+  font-size: 26px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.stat-title {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.stat-revenue .stat-icon {
+  background: rgba(99, 102, 241, 0.15);
+  color: #6366f1;
+}
+
+.stat-available .stat-icon {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.stat-occupied .stat-icon {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.stat-booking .stat-icon {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+@media (max-width: 1200px) {
+  .admin-dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
