@@ -41,7 +41,6 @@ const App = () => {
           <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/slot-monitor" element={<SlotMonitor />} />
-            <Route path="/admin/profile" element={<UserProfile />} />
             <Route path="/admin/transactions" element={<Transactions />} />
             <Route path="/admin/users" element={<ManageUsers />} />
             <Route path="/admin/reports" element={<Reports />} />
