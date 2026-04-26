@@ -39,7 +39,8 @@ exports.sendOtp = async (req, res) => {
         otp,
         otpExpiry: Date.now() + 5 * 60 * 1000,
       },
-      { upsert: true, new: true },
+      // { upsert: true, new: true },
+      { upsert: true, returnDocument: "after" },
     );
 
     await sendEmail(email, otp, name);

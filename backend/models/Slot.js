@@ -22,7 +22,7 @@ const slotSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["free", "booked", "occupied"],
+      enum: ["free", "booked", "occupied", "alert"],
       default: "free",
     },
 
