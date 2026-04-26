@@ -1,4 +1,5 @@
 const Slot = require("../models/Slot");
+const Booking = require("../models/Booking");
 
 // CREATE SLOT (Admin)
 exports.createSlot = async (req, res) => {
@@ -32,6 +33,59 @@ exports.getSlots = async (req, res) => {
   }
 };
 
+exports.bookSlot = async (req, res) => {
+  try {
+    const { slotId, userId, vehicleNumber } = req.body;
+
+    const slot = await Slot.findById(slotId);
+
+    if (!slot) {
+      return res.status(404).json({
+        message: "Slot not found",
+      });
+    }
+
+    if (slot.status !== "free") {
+      return res.status(400).json({
+        message: "Slot already booked or occupied",
+      });
+    }
+
+    const existingBooking = await Booking.findOne({
+      user: userId,
+      status: "active",
+    });
+
+    if (existingBooking) {
+      return res.status(400).json({
+        message: "User already has active booking",
+      });
+    }
+
+    const booking = await Booking.create({
+      user: userId,
+      slot: slotId,
+      vehicleNumber,
+      bookingType: "manual",
+      paymentStatus: "paid",
+    });
+
+    slot.status = "booked";
+
+    await slot.save();
+
+    res.json({
+      message: "Slot booked successfully",
+      booking,
+      slot,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
 // UPDATE SLOT STATUS (Admin manual update)
 exports.updateSlotStatus = async (req, res) => {
   try {
@@ -57,18 +111,55 @@ exports.sensorUpdateSlot = async (req, res) => {
   try {
     const { sensorId, status } = req.body;
 
-    const slot = await Slot.findOneAndUpdate(
-      { sensorId },
-      { status },
-      { new: true },
-    );
+    const slot = await Slot.findOne({ sensorId });
+
+    if (!slot) {
+      return res.status(404).json({
+        message: "Slot not found",
+      });
+    }
+
+    if (slot.status === "booked" && status !== "occupied") {
+      return res.json({
+        message: "Slot reserved. Ignoring sensor update.",
+        slot,
+      });
+    }
+
+    // Update slot normally
+    slot.status = status;
+
+    if (status === "free") {
+      slot.currentVehicle = null;
+    }
+
+    await slot.save();
+
+    // Complete booking when vehicle leaves
+    if (status === "free") {
+      const booking = await Booking.findOneAndUpdate(
+        {
+          slot: slot._id,
+          status: "active",
+        },
+        {
+          status: "completed",
+          exitTime: new Date(),
+        },
+        { new: true },
+      );
+
+      console.log("Completed booking:", booking);
+    }
 
     res.json({
       message: "Slot updated by sensor",
       slot,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
