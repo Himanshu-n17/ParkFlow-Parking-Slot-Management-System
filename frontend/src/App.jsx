@@ -11,7 +11,8 @@ import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 
 import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
-import SlotMonitor from "./pages/admin//slot-monitor/SlotMonitor";
+import SlotMonitor from "./pages/admin/slot-monitor/SlotMonitor";
+import AnprMonitor from "./pages/admin/anpr/AnprMonitor";
 import Transactions from "./pages/admin/transactions/Transactions";
 import ManageUsers from "./pages/admin/users/ManageUsers";
 import Reports from "./pages/admin/reports/Reports";
@@ -41,6 +42,7 @@ const App = () => {
           <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/slot-monitor" element={<SlotMonitor />} />
+            <Route path="/admin/anpr" element={<AnprMonitor />} />
             <Route path="/admin/profile" element={<UserProfile />} />
             <Route path="/admin/transactions" element={<Transactions />} />
             <Route path="/admin/users" element={<ManageUsers />} />

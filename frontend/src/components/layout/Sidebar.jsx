@@ -47,6 +47,11 @@ const Sidebar = () => {
               Slot Monitor
             </NavLink>
 
+            <NavLink to="/admin/anpr">
+              <FiMonitor />
+              ANPR Section
+            </NavLink>
+
             <NavLink to="/admin/transactions">
               <FiList />
               Transactions
