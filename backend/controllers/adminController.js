@@ -9,11 +9,15 @@ exports.getDashboardStats = async (req, res) => {
 
     const totalSlots = await Slot.countDocuments();
 
+    const freeSlots = await Slot.countDocuments({ status: "free" });
+
+    const bookedSlots = await Slot.countDocuments({ status: "booked" });
+
     const occupiedSlots = await Slot.countDocuments({
       status: "occupied",
     });
 
-    const activeVehicles = await Booking.countDocuments({
+    const activeBookings = await Booking.countDocuments({
       status: "active",
     });
 
@@ -29,8 +33,11 @@ exports.getDashboardStats = async (req, res) => {
     res.json({
       totalUsers,
       totalSlots,
+      freeSlots,
+      bookedSlots,
       occupiedSlots,
-      activeVehicles,
+      activeBookings,
+      completedBookings,
       totalRevenue,
     });
   } catch (error) {
@@ -67,6 +74,22 @@ exports.getSlotStats = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+exports.getAlertSlots = async (req, res) => {
+  try {
+    const alertSlots = await Slot.find({
+      status: "alert",
+    });
+
+    res.json({
+      alerts: alertSlots,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 

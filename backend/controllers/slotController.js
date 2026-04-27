@@ -119,9 +119,39 @@ exports.sensorUpdateSlot = async (req, res) => {
       });
     }
 
+    if (status === "occupied") {
+      const activeBooking = await Booking.findOne({
+        slot: slot._id,
+        status: "active",
+      });
+
+      // If no booking exists → mark alert
+      if (!activeBooking) {
+        slot.status = "alert";
+
+        await slot.save();
+
+        return res.json({
+          message: "Unauthorized parking detected",
+          slot,
+        });
+      }
+    }
+
     if (slot.status === "booked" && status !== "occupied") {
       return res.json({
         message: "Slot reserved. Ignoring sensor update.",
+        slot,
+      });
+    }
+
+    if (slot.status === "alert" && status === "free") {
+      slot.status = "free";
+
+      await slot.save();
+
+      return res.json({
+        message: "Alert cleared. Slot is now free.",
         slot,
       });
     }

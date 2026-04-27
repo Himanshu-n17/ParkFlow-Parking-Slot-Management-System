@@ -128,3 +128,55 @@ exports.getAllBookings = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.cancelBooking = async (req, res) => {
+  try {
+    const { bookingId } = req.body;
+
+    const booking = await Booking.findById(bookingId);
+
+    if (!booking) {
+      return res.status(404).json({
+        message: "Booking not found",
+      });
+    }
+
+    if (booking.status !== "active") {
+      return res.status(400).json({
+        message: "Booking cannot be cancelled",
+      });
+    }
+
+    const slot = await Slot.findById(booking.slot);
+
+    if (!slot) {
+      return res.status(404).json({
+        message: "Slot not found",
+      });
+    }
+
+    if (slot.status === "occupied") {
+      return res.status(400).json({
+        message: "Vehicle already parked. Cannot cancel booking",
+      });
+    }
+
+    booking.status = "cancelled";
+    await booking.save();
+
+    slot.status = "free";
+    slot.currentVehicle = null;
+
+    await slot.save();
+
+    res.json({
+      message: "Booking cancelled successfully",
+      booking,
+      slot,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
