@@ -1,5 +1,7 @@
 const Booking = require("../models/Booking");
 const Slot = require("../models/Slot");
+const User = require("../models/User");
+const AdminStats = require("../models/AdminStats");
 
 // VEHICLE ENTRY (Manual or Camera)
 exports.vehicleEntry = async (req, res) => {
@@ -177,6 +179,11 @@ exports.cancelBooking = async (req, res) => {
       user.wallet += refundAmount;
       await user.save();
     }
+
+    const stats = await AdminStats.findOne();
+    stats.totalRevenue -= booking.cost;
+    stats.totalRevenue += cancellationFee;
+    await stats.save();
 
     booking.status = "cancelled";
     await booking.save();
