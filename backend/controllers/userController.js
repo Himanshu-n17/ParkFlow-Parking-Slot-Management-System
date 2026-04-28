@@ -44,6 +44,28 @@ exports.getAvailableSlots = async (req, res) => {
 };
 
 // USER DASHBOARD STATS
+// exports.getUserStats = async (req, res) => {
+//   try {
+//     const bookings = await Booking.find({
+//       user: req.params.userId,
+//     });
+
+//     const totalBookings = bookings.length;
+
+//     const totalSpent = bookings.reduce((sum, b) => sum + (b.cost || 0), 0);
+
+//     const activeBooking = bookings.find((b) => b.status === "active");
+
+//     res.json({
+//       totalBookings,
+//       totalSpent,
+//       activeBooking: activeBooking ? true : false,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
 exports.getUserStats = async (req, res) => {
   try {
     const bookings = await Booking.find({
@@ -52,14 +74,27 @@ exports.getUserStats = async (req, res) => {
 
     const totalBookings = bookings.length;
 
-    const totalSpent = bookings.reduce((sum, b) => sum + (b.cost || 0), 0);
+    const completedBookings = bookings.filter(
+      (b) => b.status === "completed",
+    ).length;
+
+    const cancelledBookings = bookings.filter(
+      (b) => b.status === "cancelled",
+    ).length;
 
     const activeBooking = bookings.find((b) => b.status === "active");
 
+    const totalSpent = bookings.reduce((sum, b) => sum + (b.cost || 0), 0);
+
+    const vehicleNumber = bookings.length > 0 ? bookings[0].vehicleNumber : "-";
+
     res.json({
       totalBookings,
-      totalSpent,
+      completedBookings,
+      cancelledBookings,
       activeBooking: activeBooking ? true : false,
+      totalSpent,
+      vehicleNumber,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

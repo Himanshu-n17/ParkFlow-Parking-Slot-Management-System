@@ -1,25 +1,45 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../../components/layout/DashboardLayout";
+import { getUserStats } from "../../../services/userService";
 
 const UserProfile = () => {
+  const [stats, setStats] = useState(null);
+
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/immutability
+    fetchStats();
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      const data = await getUserStats(user._id);
+      setStats(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  if (!stats) return null;
+
   return (
     <DashboardLayout>
       <div className="user-profile-container">
         {/* LEFT PROFILE CARD */}
-
         <div className="user-profile-card">
-          <div className="user-profile-avatar">AM</div>
+          <div className="user-profile-avatar">{user.name.charAt(0)}</div>
 
-          <h2 className="user-profile-name">Arjun Mehta</h2>
+          <h2 className="user-profile-name">{user.name}</h2>
 
-          <p className="user-profile-email">user@parkiq.com</p>
+          <p className="user-profile-email">{user.email}</p>
 
           <span className="user-profile-badge">User Account</span>
 
           <div className="user-profile-info">
             <div className="user-profile-row">
               <span>Email</span>
-              <strong>user@parkiq.com</strong>
+              <strong>{user.email}</strong>
             </div>
 
             <div className="user-profile-row">
@@ -29,25 +49,22 @@ const UserProfile = () => {
 
             <div className="user-profile-row">
               <span>Member Since</span>
-              <strong>March 2026</strong>
+              <strong>{new Date(user.createdAt).toLocaleDateString()}</strong>
             </div>
 
             <div className="user-profile-row">
               <span>Registered Vehicle</span>
-              <strong>MH12AB4321</strong>
+              <strong>{stats.vehicleNumber}</strong>
             </div>
           </div>
         </div>
 
         {/* RIGHT SIDE */}
-
         <div className="user-profile-right">
-          {/* WALLET CARD */}
-
           <div className="user-profile-wallet">
             <h3>Wallet Balance</h3>
 
-            <h1>₹2354</h1>
+            <h1>₹{user.wallet || 0}</h1>
 
             <p>Available balance</p>
 
@@ -55,33 +72,32 @@ const UserProfile = () => {
           </div>
 
           {/* STATISTICS CARD */}
-
           <div className="user-profile-stats">
             <h3>My Statistics</h3>
 
             <div className="user-profile-stats-row">
               <span>Total Bookings</span>
-              <strong>3</strong>
+              <strong>{stats.totalBookings}</strong>
             </div>
 
             <div className="user-profile-stats-row">
               <span>Completed</span>
-              <strong>1</strong>
+              <strong>{stats.completedBookings}</strong>
             </div>
 
             <div className="user-profile-stats-row">
               <span>Active Now</span>
-              <strong>1</strong>
+              <strong>{stats.activeBooking ? "1" : "0"}</strong>
             </div>
 
             <div className="user-profile-stats-row">
               <span>Cancelled</span>
-              <strong>1</strong>
+              <strong>{stats.cancelledBookings}</strong>
             </div>
 
             <div className="user-profile-stats-row">
               <span>Total Spent</span>
-              <strong>₹96</strong>
+              <strong>₹{stats.totalSpent}</strong>
             </div>
           </div>
         </div>
