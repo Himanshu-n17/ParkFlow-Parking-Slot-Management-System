@@ -1,6 +1,7 @@
 const Slot = require("../models/Slot");
 const Booking = require("../models/Booking");
 const User = require("../models/User");
+const AdminStats = require("../models/AdminStats");
 
 // Parking pricing logic
 const calculateCost = (seconds) => {
@@ -115,6 +116,13 @@ exports.bookSlot = async (req, res) => {
     // ✅ Deduct wallet balance
     user.wallet -= cost;
     await user.save();
+
+    let stats = await AdminStats.findOne();
+    if (!stats) {
+      stats = await AdminStats.create({ totalRevenue: 0 });
+    }
+    stats.totalRevenue += cost;
+    await stats.save();
 
     const entryTime = new Date();
 

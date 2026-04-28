@@ -25,10 +25,17 @@ exports.getDashboardStats = async (req, res) => {
       status: "completed",
     });
 
-    const totalRevenue = completedBookings.reduce(
-      (sum, b) => sum + (b.cost || 0),
-      0,
-    );
+    const bookings = await Booking.find({
+      paymentStatus: "paid",
+    });
+
+    let totalRevenue = bookings.reduce((sum, booking) => {
+      if (booking.status === "cancelled") {
+        return sum + 10; // cancellation fee retained
+      }
+
+      return sum + (booking.cost || 0);
+    }, 0);
 
     res.json({
       totalUsers,
@@ -97,12 +104,20 @@ exports.getAlertSlots = async (req, res) => {
 exports.getRevenueStats = async (req, res) => {
   try {
     const bookings = await Booking.find({
-      status: "completed",
+      paymentStatus: "paid",
     });
 
-    const totalRevenue = bookings.reduce((sum, b) => sum + (b.cost || 0), 0);
+    let totalRevenue = bookings.reduce((sum, booking) => {
+      if (booking.status === "cancelled") {
+        return sum + 10; // cancellation fee
+      }
 
-    const totalBookings = bookings.length;
+      return sum + (booking.cost || 0);
+    }, 0);
+
+    const totalBookings = bookings.filter(
+      (booking) => booking.status !== "cancelled",
+    ).length;
 
     const avgRevenue = totalBookings === 0 ? 0 : totalRevenue / totalBookings;
 
