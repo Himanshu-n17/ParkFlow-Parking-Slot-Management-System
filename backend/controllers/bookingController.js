@@ -155,10 +155,27 @@ exports.cancelBooking = async (req, res) => {
       });
     }
 
-    if (slot.status === "occupied") {
+    if (slot.status !== "booked") {
       return res.status(400).json({
-        message: "Vehicle already parked. Cannot cancel booking",
+        message: "Cancellation allowed only before vehicle arrival",
       });
+    }
+
+    const user = await User.findById(booking.user);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    const cancellationFee = 10;
+
+    const refundAmount = booking.cost - cancellationFee;
+
+    if (refundAmount > 0) {
+      user.wallet += refundAmount;
+      await user.save();
     }
 
     booking.status = "cancelled";
@@ -166,11 +183,13 @@ exports.cancelBooking = async (req, res) => {
 
     slot.status = "free";
     slot.currentVehicle = null;
-
     await slot.save();
 
     res.json({
       message: "Booking cancelled successfully",
+      cancellationFee,
+      refundedAmount: refundAmount,
+      updatedWalletBalance: user.wallet,
       booking,
       slot,
     });

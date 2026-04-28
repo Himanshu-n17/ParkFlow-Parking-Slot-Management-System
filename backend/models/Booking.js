@@ -34,6 +34,7 @@ const bookingSchema = new mongoose.Schema(
 
     duration: {
       type: Number,
+      required: true,
     },
 
     cost: {
