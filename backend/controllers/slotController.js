@@ -1,6 +1,21 @@
 const Slot = require("../models/Slot");
 const Booking = require("../models/Booking");
+const User = require("../models/User");
 
+// Parking pricing logic
+const calculateCost = (seconds) => {
+  const minutes = seconds / 60;
+  const hours = seconds / 3600;
+
+  if (minutes <= 30) return 20;
+  if (hours <= 1) return 30;
+  if (hours <= 2) return 50;
+  if (hours <= 3) return 80;
+  if (hours <= 5) return 150;
+  if (5 < hours && hours <= 8) return 200;
+
+  return 250;
+};
 // CREATE SLOT (Admin)
 exports.createSlot = async (req, res) => {
   try {
@@ -35,7 +50,13 @@ exports.getSlots = async (req, res) => {
 
 exports.bookSlot = async (req, res) => {
   try {
-    const { slotId, userId, vehicleNumber } = req.body;
+    const { slotId, userId, vehicleNumber, duration } = req.body;
+
+    if (!duration || !/^\d{2}:\d{2}:\d{2}$/.test(duration)) {
+      return res.status(400).json({
+        message: "Duration must be in HH:MM:SS format",
+      });
+    }
 
     const slot = await Slot.findById(slotId);
 
@@ -61,12 +82,53 @@ exports.bookSlot = async (req, res) => {
         message: "User already has active booking",
       });
     }
+    const convertDurationToSeconds = (time) => {
+      const [hours, minutes, seconds] = time.split(":").map(Number);
+
+      return hours * 3600 + minutes * 60 + seconds;
+    };
+
+    const durationInSeconds = convertDurationToSeconds(duration);
+
+    const cost = calculateCost(durationInSeconds);
+
+    const user = await User.findById(userId);
+
+    if (durationInSeconds < 600) {
+      return res.status(400).json({
+        message: "Minimum booking duration is 10 minutes",
+      });
+    }
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    if (user.wallet < cost) {
+      return res.status(400).json({
+        message: "Insufficient wallet balance",
+      });
+    }
+
+    // ✅ Deduct wallet balance
+    user.wallet -= cost;
+    await user.save();
+
+    const entryTime = new Date();
+
+    const exitTime = new Date(entryTime.getTime() + durationInSeconds * 1000);
 
     const booking = await Booking.create({
       user: userId,
       slot: slotId,
       vehicleNumber,
       bookingType: "manual",
+      duration: durationInSeconds,
+      entryTime,
+      exitTime,
+      cost,
       paymentStatus: "paid",
     });
 
@@ -78,6 +140,7 @@ exports.bookSlot = async (req, res) => {
       message: "Slot booked successfully",
       booking,
       slot,
+      remainingWalletBalance: user.wallet,
     });
   } catch (error) {
     res.status(500).json({
