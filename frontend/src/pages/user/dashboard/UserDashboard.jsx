@@ -22,7 +22,6 @@ const UserDashboard = () => {
   const [currentBooking, setCurrentBooking] = useState(null);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/immutability
     fetchDashboardData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
