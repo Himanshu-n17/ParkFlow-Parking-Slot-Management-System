@@ -33,6 +33,7 @@ const Navbar = () => {
     if (path.includes("/admin/dashboard")) return "Dashboard";
     if (path.includes("/admin/slot-monitor")) return "Slot Monitor";
     if (path.includes("/admin/transactions")) return "Transactions";
+    if (path.includes("/admin/anpr-monitor")) return "ANPR Monitoring";
     if (path.includes("/admin/users")) return "All Users";
     if (path.includes("/admin/reports")) return "Reports";
 

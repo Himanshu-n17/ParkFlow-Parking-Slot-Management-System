@@ -27,6 +27,7 @@ import Landing from "./pages/Landing";
 import PrivateRoute from "./routes/PrivateRoute";
 import { Toaster } from "react-hot-toast";
 import UserProvider, { UserContext } from "./context/userContext";
+import AnprMonitor from "./pages/admin/anpr/AnprMonitor";
 
 const App = () => {
   return (
@@ -42,6 +43,7 @@ const App = () => {
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/slot-monitor" element={<SlotMonitor />} />
             <Route path="/admin/transactions" element={<Transactions />} />
+            <Route path="/admin/anpr-monitor" element={<AnprMonitor />} />
             <Route path="/admin/users" element={<ManageUsers />} />
             <Route path="/admin/reports" element={<Reports />} />
           </Route>
