@@ -1,6 +1,10 @@
 import API from "./api";
 
-// for user profile
+export const getAvailableSlots = async () => {
+  const res = await API.get("/user/slots");
+  return res.data;
+};
+
 export const getUserStats = async (userId) => {
   const res = await API.get(`/user/stats/${userId}`);
   return res.data;

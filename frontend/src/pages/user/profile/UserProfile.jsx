@@ -10,6 +10,7 @@ const UserProfile = () => {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/immutability
     fetchStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchStats = async () => {
@@ -64,7 +65,7 @@ const UserProfile = () => {
           <div className="user-profile-wallet">
             <h3>Wallet Balance</h3>
 
-            <h1>₹{user.wallet || 0}</h1>
+            <h1>₹{stats.wallet || 0}</h1>
 
             <p>Available balance</p>
 
