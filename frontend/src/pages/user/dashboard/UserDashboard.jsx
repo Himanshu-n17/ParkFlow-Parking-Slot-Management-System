@@ -1,34 +1,47 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../../components/layout/DashboardLayout";
 import { useNavigate } from "react-router-dom";
 import { Clock, LayoutGrid, Wallet, Activity, Search } from "lucide-react";
 import { UserStatCard, UserCard } from "../../../components/common/Card";
 
-const dashboardData = {
-  availableSlots: 28,
-  bookings: 1,
-  wallet: 2450,
-  active: 0,
-};
-const activities = [
-  {
-    slot: "A1",
-    vehicle: "MH12AB1234",
-    entry: "08:14 AM",
-    amount: 48,
-    status: "completed",
-  },
-  {
-    slot: "B3",
-    vehicle: "MP09XB5732",
-    entry: "09:30 AM",
-    amount: 72,
-    status: "completed",
-  },
-];
+import {
+  getAvailableSlots,
+  getBookingHistory,
+  getCurrentParking,
+  getUserStats,
+} from "../../../services/userService";
 
 const UserDashboard = () => {
   const navigate = useNavigate();
+
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const [stats, setStats] = useState({});
+  const [slots, setSlots] = useState([]);
+  const [history, setHistory] = useState([]);
+  const [currentBooking, setCurrentBooking] = useState(null);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/immutability
+    fetchDashboardData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      const slotsData = await getAvailableSlots();
+      const historyData = await getBookingHistory(user._id);
+      const currentData = await getCurrentParking(user._id);
+      const statsData = await getUserStats(user._id);
+
+      setSlots(slotsData);
+      setHistory(historyData.slice(0, 5));
+      setCurrentBooking(currentData);
+      setStats(statsData);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -36,28 +49,28 @@ const UserDashboard = () => {
         <div className="user-stats-grid">
           <UserStatCard
             icon={<Clock size={20} />}
-            value={dashboardData.availableSlots}
+            value={slots.length}
             title="Available Slots"
             color="green"
           />
 
           <UserStatCard
             icon={<LayoutGrid size={20} />}
-            value={dashboardData.bookings}
+            value={stats.totalBookings || 0}
             title="My Bookings"
             color="blue"
           />
 
           <UserStatCard
             icon={<Wallet size={20} />}
-            value={`₹${dashboardData.wallet}`}
+            value={`₹${stats.wallet || 0}`}
             title="Wallet"
             color="purple"
           />
 
           <UserStatCard
             icon={<Activity size={20} />}
-            value={dashboardData.active}
+            value={currentBooking ? 1 : 0}
             title="Active Now"
             color="yellow"
           />
@@ -65,12 +78,13 @@ const UserDashboard = () => {
 
         <div className="user-banner">
           <div className="user-banner-text">
-            <h3>No active parking</h3>
+            <h3>
+              {currentBooking
+                ? `Currently parked at Slot ${currentBooking.slot.slotNumber}`
+                : "No active parking"}
+            </h3>
 
-            <p>
-              Browse {dashboardData.availableSlots} available slots and book
-              instantly
-            </p>
+            <p>Browse {slots.length} available slots and book instantly</p>
           </div>
 
           <button
@@ -98,18 +112,27 @@ const UserDashboard = () => {
             </thead>
 
             <tbody>
-              {activities.map((item, i) => (
-                <tr key={i}>
-                  <td className="slot-cell">{item.slot}</td>
+              {history.map((item) => (
+                <tr key={item._id}>
+                  <td className="slot-cell">{item.slot.slotNumber}</td>
 
-                  <td>{item.vehicle}</td>
-
-                  <td>{item.entry}</td>
-
-                  <td className="amount-cell">₹{item.amount}</td>
+                  <td>{item.vehicleNumber}</td>
 
                   <td>
-                    <span className="status-badge">{item.status}</span>
+                    {new Date(item.entryTime).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </td>
+
+                  <td className="amount-cell">₹{item.cost}</td>
+
+                  <td>
+                    <span
+                      className={`status-badge ${item.status.toLowerCase()}`}
+                    >
+                      {item.status}
+                    </span>
                   </td>
                 </tr>
               ))}

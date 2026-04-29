@@ -40,8 +40,6 @@ const BookingHistory = () => {
   return (
     <DashboardLayout>
       <div className="history-page-container">
-        <h2 className="page-main-title">USER BOOKING HISTORY</h2>
-
         {activeBooking && (
           <div className="active-booking-card">
             <div className="card-content">
