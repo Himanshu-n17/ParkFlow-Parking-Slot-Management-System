@@ -59,3 +59,26 @@ export const UserCard = ({ title, action, onActionClick, children }) => {
     </div>
   );
 };
+
+
+//find parking
+
+
+export const ParkingSlot = ({ id, status, icon }) => {
+  const getIcon = () => {
+    if (icon === "car") return "🚗";
+    if (icon === "diamond") return "✦";
+    if (icon === "hourglass") return "⌛";
+    return "";
+  };
+
+  return (
+    <div className={`parking-slot slot-${status}`}>
+      <div className="slot-icon">{getIcon()}</div>
+      <div className="slot-id">{id}</div>
+      <div className="slot-status-label">
+        {status === "occupied" ? "In Use" : status === "reserved" ? "Booked" : "Free"}
+      </div>
+    </div>
+  );
+};
