@@ -6,6 +6,7 @@ const {
   getRecentBookings,
   getSlotStats,
   getRevenueStats,
+  getAlertSlots,
 } = require("../controllers/adminController");
 
 const { protect } = require("../middleware/authMiddleware");
@@ -21,5 +22,7 @@ router.get("/slot-stats", protect, getSlotStats);
 
 // revenue analytics
 router.get("/revenue", protect, getRevenueStats);
+
+router.get("/alerts", getAlertSlots);
 
 module.exports = router;

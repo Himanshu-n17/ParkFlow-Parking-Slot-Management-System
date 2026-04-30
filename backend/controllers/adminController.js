@@ -9,11 +9,15 @@ exports.getDashboardStats = async (req, res) => {
 
     const totalSlots = await Slot.countDocuments();
 
+    const freeSlots = await Slot.countDocuments({ status: "free" });
+
+    const bookedSlots = await Slot.countDocuments({ status: "booked" });
+
     const occupiedSlots = await Slot.countDocuments({
       status: "occupied",
     });
 
-    const activeVehicles = await Booking.countDocuments({
+    const activeBookings = await Booking.countDocuments({
       status: "active",
     });
 
@@ -21,16 +25,26 @@ exports.getDashboardStats = async (req, res) => {
       status: "completed",
     });
 
-    const totalRevenue = completedBookings.reduce(
-      (sum, b) => sum + (b.cost || 0),
-      0,
-    );
+    const bookings = await Booking.find({
+      paymentStatus: "paid",
+    });
+
+    let totalRevenue = bookings.reduce((sum, booking) => {
+      if (booking.status === "cancelled") {
+        return sum + 10; // cancellation fee retained
+      }
+
+      return sum + (booking.cost || 0);
+    }, 0);
 
     res.json({
       totalUsers,
       totalSlots,
+      freeSlots,
+      bookedSlots,
       occupiedSlots,
-      activeVehicles,
+      activeBookings,
+      completedBookings,
       totalRevenue,
     });
   } catch (error) {
@@ -70,16 +84,40 @@ exports.getSlotStats = async (req, res) => {
   }
 };
 
+exports.getAlertSlots = async (req, res) => {
+  try {
+    const alertSlots = await Slot.find({
+      status: "alert",
+    });
+
+    res.json({
+      alerts: alertSlots,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
 // REVENUE ANALYTICS
 exports.getRevenueStats = async (req, res) => {
   try {
     const bookings = await Booking.find({
-      status: "completed",
+      paymentStatus: "paid",
     });
 
-    const totalRevenue = bookings.reduce((sum, b) => sum + (b.cost || 0), 0);
+    let totalRevenue = bookings.reduce((sum, booking) => {
+      if (booking.status === "cancelled") {
+        return sum + 10; // cancellation fee
+      }
 
-    const totalBookings = bookings.length;
+      return sum + (booking.cost || 0);
+    }, 0);
+
+    const totalBookings = bookings.filter(
+      (booking) => booking.status !== "cancelled",
+    ).length;
 
     const avgRevenue = totalBookings === 0 ? 0 : totalRevenue / totalBookings;
 

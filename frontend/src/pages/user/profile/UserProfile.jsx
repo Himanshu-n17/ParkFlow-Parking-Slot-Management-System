@@ -1,109 +1,107 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../../components/layout/DashboardLayout";
-import { UserContext } from "../../../context/userContext";
-import API from "../../../services/api";
+import { getUserStats } from "../../../services/userService";
 
 const UserProfile = () => {
-  const { user } = useContext(UserContext);
-  const isAdmin = user?.role === "admin";
-  const [detections, setDetections] = useState([]);
+  const [stats, setStats] = useState(null);
+
+  const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
-    if (!isAdmin) {
-      setDetections([]);
-      return;
+    // eslint-disable-next-line react-hooks/immutability
+    fetchStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      const data = await getUserStats(user._id);
+      setStats(data);
+    } catch (err) {
+      console.log(err);
     }
+  };
 
-    const loadDetections = async () => {
-      try {
-        const response = await API.get("/anpr/my-detections");
-        setDetections(response.data || []);
-      } catch {
-        setDetections([]);
-      }
-    };
-
-    loadDetections();
-  }, [isAdmin]);
+  if (!stats) return null;
 
   return (
     <DashboardLayout>
-      <div
-        className="dashboard-card"
-        style={{ padding: "1.25rem", background: "#ffffff", color: "#111827" }}
-      >
-        <h2>User Profile Details</h2>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: "0.75rem",
-            marginTop: "0.75rem",
-          }}
-        >
-          <div style={{ background: "#f9fafb", borderRadius: "8px", padding: "0.75rem" }}>
-            <strong>Name:</strong> {user?.name || "-"}
-          </div>
-          <div style={{ background: "#f9fafb", borderRadius: "8px", padding: "0.75rem" }}>
-            <strong>Email:</strong> {user?.email || "-"}
-          </div>
-          <div style={{ background: "#f9fafb", borderRadius: "8px", padding: "0.75rem" }}>
-            <strong>Role:</strong> {user?.role || "-"}
-          </div>
-          <div style={{ background: "#f9fafb", borderRadius: "8px", padding: "0.75rem" }}>
-            <strong>Vehicle Number:</strong> {user?.vehicleNumber || "-"}
-          </div>
-          <div style={{ background: "#f9fafb", borderRadius: "8px", padding: "0.75rem" }}>
-            <strong>Wallet:</strong> {user?.wallet ?? 0}
+      <div className="user-profile-container">
+        {/* LEFT PROFILE CARD */}
+        <div className="user-profile-card">
+          <div className="user-profile-avatar">{user.name.charAt(0)}</div>
+
+          <h2 className="user-profile-name">{user.name}</h2>
+
+          <p className="user-profile-email">{user.email}</p>
+
+          <span className="user-profile-badge">User Account</span>
+
+          <div className="user-profile-info">
+            <div className="user-profile-row">
+              <span>Email</span>
+              <strong>{user.email}</strong>
+            </div>
+
+            <div className="user-profile-row">
+              <span>Account Type</span>
+              <strong>Standard User</strong>
+            </div>
+
+            <div className="user-profile-row">
+              <span>Member Since</span>
+              <strong>{new Date(user.createdAt).toLocaleDateString()}</strong>
+            </div>
+
+            <div className="user-profile-row">
+              <span>Registered Vehicle</span>
+              <strong>{stats.vehicleNumber}</strong>
+            </div>
           </div>
         </div>
 
-        {isAdmin && (
-          <div style={{ marginTop: "1rem" }}>
-            <h3>ANPR Detections</h3>
-            {detections.length === 0 ? (
-              <p>No detections found.</p>
-            ) : (
-              <div
-                style={{
-                  marginTop: "0.5rem",
-                  border: "1px solid #e5e7eb",
-                  borderRadius: "10px",
-                  overflow: "hidden",
-                  background: "#fff",
-                }}
-              >
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead style={{ background: "#f3f4f6" }}>
-                    <tr>
-                      <th style={{ textAlign: "left", padding: "0.75rem" }}>Plate</th>
-                      <th style={{ textAlign: "left", padding: "0.75rem" }}>Confidence</th>
-                      <th style={{ textAlign: "left", padding: "0.75rem" }}>Detected At</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {detections.map((item, index) => (
-                      <tr
-                        key={item._id}
-                        style={{ background: index % 2 === 0 ? "#ffffff" : "#f9fafb" }}
-                      >
-                        <td style={{ padding: "0.75rem", borderTop: "1px solid #f3f4f6" }}>
-                          {item.plate}
-                        </td>
-                        <td style={{ padding: "0.75rem", borderTop: "1px solid #f3f4f6" }}>
-                          {Number(item.confidence || 0).toFixed(1)}%
-                        </td>
-                        <td style={{ padding: "0.75rem", borderTop: "1px solid #f3f4f6" }}>
-                          {new Date(item.createdAt).toLocaleString()}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+        {/* RIGHT SIDE */}
+        <div className="user-profile-right">
+          <div className="user-profile-wallet">
+            <h3>Wallet Balance</h3>
+
+            <h1>₹{stats.wallet || 0}</h1>
+
+            <p>Available balance</p>
+
+            <button className="user-profile-add-money">+ Add Money</button>
           </div>
-        )}
+
+          {/* STATISTICS CARD */}
+          <div className="user-profile-stats">
+            <h3>My Statistics</h3>
+
+            <div className="user-profile-stats-row">
+              <span>Total Bookings</span>
+              <strong>{stats.totalBookings}</strong>
+            </div>
+
+            <div className="user-profile-stats-row">
+              <span>Completed</span>
+              <strong>{stats.completedBookings}</strong>
+            </div>
+
+            <div className="user-profile-stats-row">
+              <span>Active Now</span>
+              <strong>{stats.activeBooking ? "1" : "0"}</strong>
+            </div>
+
+            <div className="user-profile-stats-row">
+              <span>Cancelled</span>
+              <strong>{stats.cancelledBookings}</strong>
+            </div>
+
+            <div className="user-profile-stats-row">
+              <span>Total Spent</span>
+              <strong>₹{stats.totalSpent}</strong>
+            </div>
+          </div>
+        </div>
       </div>
     </DashboardLayout>
   );

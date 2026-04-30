@@ -6,6 +6,7 @@ const {
   vehicleExit,
   getUserBookings,
   getAllBookings,
+  cancelBooking,
 } = require("../controllers/bookingController");
 
 const { protect } = require("../middleware/authMiddleware");
@@ -21,5 +22,7 @@ router.get("/user/:userId", protect, getUserBookings);
 
 // admin bookings
 router.get("/", protect, getAllBookings);
+
+router.post("/cancel-booking", protect, cancelBooking);
 
 module.exports = router;

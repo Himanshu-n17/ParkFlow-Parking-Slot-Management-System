@@ -1,5 +1,6 @@
 const Booking = require("../models/Booking");
 const Slot = require("../models/Slot");
+const User = require("../models/User");
 
 // CURRENT ACTIVE BOOKING
 exports.getCurrentParking = async (req, res) => {
@@ -43,23 +44,38 @@ exports.getAvailableSlots = async (req, res) => {
   }
 };
 
-// USER DASHBOARD STATS
 exports.getUserStats = async (req, res) => {
   try {
     const bookings = await Booking.find({
       user: req.params.userId,
     });
 
+    const user = await User.findById(req.params.userId);
+
     const totalBookings = bookings.length;
 
-    const totalSpent = bookings.reduce((sum, b) => sum + (b.cost || 0), 0);
+    const completedBookings = bookings.filter(
+      (b) => b.status === "completed",
+    ).length;
+
+    const cancelledBookings = bookings.filter(
+      (b) => b.status === "cancelled",
+    ).length;
 
     const activeBooking = bookings.find((b) => b.status === "active");
 
+    const totalSpent = bookings.reduce((sum, b) => sum + (b.cost || 0), 0);
+
+    const vehicleNumber = bookings.length > 0 ? bookings[0].vehicleNumber : "-";
+
     res.json({
       totalBookings,
-      totalSpent,
+      completedBookings,
+      cancelledBookings,
       activeBooking: activeBooking ? true : false,
+      totalSpent,
+      vehicleNumber,
+      wallet: user.wallet,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -47,9 +47,9 @@ const Sidebar = () => {
               Slot Monitor
             </NavLink>
 
-            <NavLink to="/admin/anpr">
+            <NavLink to="/admin/anpr-monitor">
               <FiMonitor />
-              ANPR Section
+              ANPR Monitor
             </NavLink>
 
             <NavLink to="/admin/transactions">

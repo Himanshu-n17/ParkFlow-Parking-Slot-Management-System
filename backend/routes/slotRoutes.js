@@ -7,6 +7,7 @@ const {
   updateSlotStatus,
   deleteSlot,
   sensorUpdateSlot,
+  bookSlot,
 } = require("../controllers/slotController");
 
 const { protect } = require("../middleware/authMiddleware");
@@ -16,6 +17,8 @@ router.post("/", protect, createSlot);
 
 // get all slots
 router.get("/", getSlots);
+
+router.post("/book-slot", bookSlot);
 
 // admin update
 router.put("/:id", protect, updateSlotStatus);
