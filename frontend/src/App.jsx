@@ -11,7 +11,8 @@ import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 
 import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
-import SlotMonitor from "./pages/admin//slot-monitor/SlotMonitor";
+import SlotMonitor from "./pages/admin/slot-monitor/SlotMonitor";
+import AnprMonitor from "./pages/admin/anpr/AnprMonitor";
 import Transactions from "./pages/admin/transactions/Transactions";
 import ManageUsers from "./pages/admin/users/ManageUsers";
 import Reports from "./pages/admin/reports/Reports";
@@ -27,7 +28,6 @@ import Landing from "./pages/Landing";
 import PrivateRoute from "./routes/PrivateRoute";
 import { Toaster } from "react-hot-toast";
 import UserProvider, { UserContext } from "./context/userContext";
-import AnprMonitor from "./pages/admin/anpr/AnprMonitor";
 
 const App = () => {
   return (
@@ -42,8 +42,11 @@ const App = () => {
           <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/slot-monitor" element={<SlotMonitor />} />
-            <Route path="/admin/transactions" element={<Transactions />} />
+            {/* Keep both paths working (backward compatible) */}
+            <Route path="/admin/anpr" element={<AnprMonitor />} />
             <Route path="/admin/anpr-monitor" element={<AnprMonitor />} />
+            <Route path="/admin/profile" element={<UserProfile />} />
+            <Route path="/admin/transactions" element={<Transactions />} />
             <Route path="/admin/users" element={<ManageUsers />} />
             <Route path="/admin/reports" element={<Reports />} />
           </Route>
