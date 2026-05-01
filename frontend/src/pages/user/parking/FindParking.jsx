@@ -1,83 +1,115 @@
-
-import React from "react";
+import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../../components/layout/DashboardLayout";
 import { UserCard, ParkingSlot } from "../../../components/common/Card";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+
+import {
+  getAllSlots,
+  getCurrentBooking,
+} from "../../../services/parkingService";
 
 const FindParking = () => {
-  const parkingData = [
-    {
-      title: "FLOOR 1 - SECTOR A",
-      slots: [
-        { id: "P01", status: "occupied", icon: "car" },
-        { id: "P02", status: "free", icon: "diamond" },
-        { id: "P03", status: "free", icon: "diamond" },
-        { id: "P04", status: "free", icon: "diamond" },
-        { id: "P04", status: "free", icon: "diamond" },
-        { id: "P05", status: "reserved", icon: "hourglass" },
-        { id: "P07", status: "free", icon: "diamond" },
-        { id: "P08", status: "occupied", icon: "car" },
-        { id: "P09", status: "free", icon: "diamond" },
-        { id: "P10", status: "free", icon: "diamond" },
-      ],
-    },
-    {
-      title: "FLOOR 2 - SECTOR B",
-      slots: [
-        { id: "P11", status: "reserved", icon: "hourglass" },
-        { id: "P12", status: "free", icon: "diamond" },
-        { id: "P13", status: "free", icon: "diamond" },
-        { id: "P14", status: "free", icon: "diamond" },
-        { id: "P15", status: "occupied", icon: "car" },
-        { id: "P16", status: "reserved", icon: "hourglass" },
-        { id: "P17", status: "free", icon: "diamond" },
-      ],
-    },
-    {
-      title: "FLOOR 3 - SECTOR C",
-      slots: [
-        { id: "P20", status: "free", icon: "diamond" },
-        { id: "P21", status: "free", icon: "diamond" },
-      ],
-    },
-  ];
+  const navigate = useNavigate();
+
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const [slots, setSlots] = useState([]);
+  const [currentBooking, setCurrentBooking] = useState(null);
+
+  useEffect(() => {
+    fetchSlots();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const fetchSlots = async () => {
+    try {
+      const slotsData = await getAllSlots();
+      const booking = await getCurrentBooking(user._id);
+
+      setSlots(slotsData);
+      setCurrentBooking(booking);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const groupedSlots = slots.reduce((acc, slot) => {
+    const key = `FLOOR ${slot.floor} - SECTOR ${slot.sector}`;
+
+    if (!acc[key]) acc[key] = [];
+
+    acc[key].push(slot);
+
+    return acc;
+  }, {});
+
+  const handleSlotClick = async (slot) => {
+    if (slot.status !== "free") {
+      toast.error("Slot not available");
+      return;
+    }
+
+    if (currentBooking) {
+      toast.error("You already have an active booking");
+      return;
+    }
+
+    try {
+      navigate(`/user/book-parking/${slot._id}`);
+      // eslint-disable-next-line no-unused-vars
+    } catch (err) {
+      toast.error("Booking failed");
+    }
+  };
+
+  const freeCount = slots.filter((s) => s.status === "free").length;
+
+  const occupiedCount = slots.filter((s) => s.status === "occupied").length;
+
+  const bookedCount = slots.filter((s) => s.status === "booked").length;
 
   return (
     <DashboardLayout>
       <div className="find-parking-container">
         <div className="parking-header-actions">
           <div className="legend-container">
-            <span className="legend-badge"><i className="dot free"></i> 28 Free</span>
-            <span className="legend-badge"><i className="dot occupied"></i> 6 Occupied</span>
-            <span className="legend-badge"><i className="dot reserved"></i> 6 Reserved</span>
-            <span className="legend-badge"><i className="dot mine"></i> Your booking</span>
-          </div>
-          
-          <div style={{ display: "flex", gap: "12px" }}>
-            <select className="filter-select">
-              <option>All Floors</option>
-              <option>Floor 1</option>
-              <option>Floor 2</option>
-              <option>Floor 3</option>
-            </select>
-            <select className="filter-select">
-              <option>All Status</option>
-              <option>Free</option>
-              <option>Occupied</option>
-            </select>
+            <span className="legend-badge">
+              <i className="dot free"></i> {freeCount} Free
+            </span>
+
+            <span className="legend-badge">
+              <i className="dot occupied"></i> {occupiedCount} Occupied
+            </span>
+
+            <span className="legend-badge">
+              <i className="dot booked"></i> {bookedCount} Booked
+            </span>
+
+            {currentBooking && (
+              <span className="legend-badge">
+                <i className="dot mine"></i> Your booking
+              </span>
+            )}
           </div>
         </div>
 
         <UserCard>
-          {parkingData.map((floor, index) => (
-            <div key={index} className="floor-group">
-              <h4 className="floor-header">{floor.title}</h4>
+          {Object.keys(groupedSlots).map((group) => (
+            <div key={group} className="floor-group">
+              <h4 className="floor-header">{group}</h4>
+
               <div className="parking-grid">
-                {floor.slots.map((slot, idx) => (
-                  <ParkingSlot 
-                    key={idx} 
-                    id={slot.id} 
-                    status={slot.status} 
-                    icon={slot.icon}
+                {groupedSlots[group].map((slot) => (
+                  <ParkingSlot
+                    key={slot._id}
+                    id={slot.slotNumber}
+                    status={
+                      currentBooking && currentBooking.slot._id === slot._id
+                        ? "mine"
+                        : slot.status
+                    }
+                    onClick={() => handleSlotClick(slot)}
                   />
                 ))}
               </div>

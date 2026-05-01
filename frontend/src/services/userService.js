@@ -19,3 +19,10 @@ export const getBookingHistory = async (userId) => {
   const res = await API.get(`/user/history/${userId}`);
   return res.data;
 };
+
+export const cancelBooking = async (bookingId) => {
+  const res = await API.post("/bookings/cancel-booking", {
+    bookingId,
+  });
+  return res.data;
+};
