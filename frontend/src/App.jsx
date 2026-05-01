@@ -55,6 +55,7 @@ const App = () => {
           <Route element={<PrivateRoute allowedRoles={["user"]} />}>
             <Route path="/user/dashboard" element={<UserDashboard />} />
             <Route path="/user/find-parking" element={<FindParking />} />
+            <Route path="/user/book-parking/:slotId" element={<BookSlot />} />
             <Route path="/user/bookings" element={<BookingHistory />} />
             <Route path="/user/profile" element={<UserProfile />} />
           </Route>
