@@ -39,6 +39,8 @@ const Navbar = () => {
 
     // User Routes
     if (path.includes("/user/dashboard")) return "Dashboard";
+    if (path.includes("/user/find-parking-near-me"))
+      return "Find Parking Near Me";
     if (path.includes("/user/find-parking")) return "Find Parking";
     if (path.includes("/user/bookings")) return "My Bookings";
     if (path.includes("/user/profile")) return "My Profile";

@@ -78,6 +78,11 @@ const Sidebar = () => {
               <FiSearch />
               Find Parking
             </NavLink>
+            
+            <NavLink to="/user/find-parking-near-me">
+              <FiSearch />
+              Find Parking Near Me
+            </NavLink>
 
             <NavLink to="/user/bookings">
               <FiList />

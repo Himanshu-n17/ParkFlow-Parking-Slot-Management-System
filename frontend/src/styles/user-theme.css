@@ -834,3 +834,8 @@
 .btn-confirm:hover {
   background-color: #4338ca;
 }
+
+/* =====================================Find Parking======================================== */
+.red-marker {
+  filter: hue-rotate(140deg);
+}

@@ -21,6 +21,7 @@ import BookingHistory from "./pages/user/bookings/BookingHistory";
 import UserDashboard from "./pages/user/dashboard/UserDashboard";
 import BookSlot from "./pages/user/parking/BookSlot";
 import FindParking from "./pages/user/parking/FindParking";
+import FindParkingNearMe from "./pages/user/parking/FindParkingNearMe";
 import UserProfile from "./pages/user/profile/UserProfile";
 
 import Landing from "./pages/Landing";
@@ -42,10 +43,7 @@ const App = () => {
           <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/slot-monitor" element={<SlotMonitor />} />
-            {/* Keep both paths working (backward compatible) */}
-            <Route path="/admin/anpr" element={<AnprMonitor />} />
             <Route path="/admin/anpr-monitor" element={<AnprMonitor />} />
-            <Route path="/admin/profile" element={<UserProfile />} />
             <Route path="/admin/transactions" element={<Transactions />} />
             <Route path="/admin/users" element={<ManageUsers />} />
             <Route path="/admin/reports" element={<Reports />} />
@@ -56,6 +54,7 @@ const App = () => {
             <Route path="/user/dashboard" element={<UserDashboard />} />
             <Route path="/user/find-parking" element={<FindParking />} />
             <Route path="/user/book-parking/:slotId" element={<BookSlot />} />
+            <Route path="/user/find-parking-near-me" element={<FindParkingNearMe />} />
             <Route path="/user/bookings" element={<BookingHistory />} />
             <Route path="/user/profile" element={<UserProfile />} />
           </Route>
