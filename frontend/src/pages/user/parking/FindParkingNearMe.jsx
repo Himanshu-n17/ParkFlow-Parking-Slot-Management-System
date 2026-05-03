@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
+window.L = L;
+import "leaflet-routing-machine";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
 import DashboardLayout from "../../../components/layout/DashboardLayout";
@@ -20,6 +22,7 @@ const userLocationIcon = L.divIcon({
   iconSize: [18, 18],
   iconAnchor: [9, 9],
 });
+
 const parkingIcon = new L.Icon({
   iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
   shadowUrl: markerShadow,
@@ -28,6 +31,7 @@ const parkingIcon = new L.Icon({
   iconAnchor: [22, 45],
   popupAnchor: [-3, -40],
 });
+
 const nearestParkingIcon = new L.Icon({
   iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
 
@@ -40,11 +44,35 @@ const nearestParkingIcon = new L.Icon({
   className: "red-marker",
 });
 
+const Routing = ({ selectedParking, location }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!selectedParking || !location) return;
+
+    const routing = L.Routing.control({
+      waypoints: [
+        L.latLng(location.lat, location.lng),
+        L.latLng(selectedParking.lat, selectedParking.lng),
+      ],
+      routeWhileDragging: false,
+      addWaypoints: false,
+      draggableWaypoints: false,
+      show: false,
+    }).addTo(map);
+
+    return () => map.removeControl(routing);
+  }, [selectedParking, location]);
+
+  return null;
+};
+
 const FindParkingNearMe = () => {
   const [location, setLocation] = useState(null);
   const [error, setError] = useState("");
   const [nearestParking, setNearestParking] = useState(null);
   const [nearestDistance, setNearestDistance] = useState(null);
+  const [selectedParking, setSelectedParking] = useState(null);
 
   const parkingLocations = [
     {
@@ -107,12 +135,12 @@ const FindParkingNearMe = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const openDirections = (parkingLat, parkingLng) => {
-    window.open(
-      `https://www.openstreetmap.org/directions?from=${location.lat},${location.lng}&to=${parkingLat},${parkingLng}`,
-      "_blank",
-    );
-  };
+  // const openDirections = (parkingLat, parkingLng) => {
+  //   window.open(
+  //     `https://www.openstreetmap.org/directions?from=${location.lat},${location.lng}&to=${parkingLat},${parkingLng}`,
+  //     "_blank",
+  //   );
+  // };
   const getDistanceKm = (lat1, lon1, lat2, lon2) => {
     const R = 6371;
 
@@ -120,11 +148,10 @@ const FindParkingNearMe = () => {
     const dLon = ((lon2 - lon1) * Math.PI) / 180;
 
     const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.sin(dLat / 2) ** 2 +
       Math.cos((lat1 * Math.PI) / 180) *
         Math.cos((lat2 * Math.PI) / 180) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
+        Math.sin(dLon / 2) ** 2;
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
@@ -155,8 +182,13 @@ const FindParkingNearMe = () => {
       setNearestParking(nearest);
       setNearestDistance(minDistance.toFixed(2));
 
-      openDirections(nearest.lat, nearest.lng);
+      setSelectedParking(nearest);
+      // openDirections(nearest.lat, nearest.lng);
     }
+  };
+
+  const handleRoute = (parking) => {
+    setSelectedParking(parking);
   };
 
   if (error) return <p>{error}</p>;
@@ -199,6 +231,8 @@ const FindParkingNearMe = () => {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
 
+          <Routing selectedParking={selectedParking} location={location} />
+
           <Marker
             position={[location.lat, location.lng]}
             icon={userLocationIcon}
@@ -206,7 +240,6 @@ const FindParkingNearMe = () => {
             <Popup>You are here 📍</Popup>
           </Marker>
 
-          {/* PARKFLOW PARKING LOCATIONS */}
           {parkingLocations.map((parking, index) => (
             <Marker
               key={index}
@@ -228,7 +261,8 @@ const FindParkingNearMe = () => {
                 )}
                 <br />
                 <button
-                  onClick={() => openDirections(parking.lat, parking.lng)}
+                  onClick={() => handleRoute(parking)}
+                  // onClick={() => openDirections(parking.lat, parking.lng)}
                   style={{
                     marginTop: "5px",
                     padding: "6px 10px",
