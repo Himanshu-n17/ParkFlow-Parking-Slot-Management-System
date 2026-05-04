@@ -64,7 +64,17 @@ exports.getUserStats = async (req, res) => {
 
     const activeBooking = bookings.find((b) => b.status === "active");
 
-    const totalSpent = bookings.reduce((sum, b) => sum + (b.cost || 0), 0);
+    let totalSpent = 0;
+
+    bookings.forEach((b) => {
+      if (b.status === "completed") {
+        totalSpent += b.cost || 0;
+      }
+
+      if (b.status === "cancelled") {
+        totalSpent += 10; // cancellation charge
+      }
+    });
 
     const vehicleNumber = bookings.length > 0 ? bookings[0].vehicleNumber : "-";
 
