@@ -74,6 +74,9 @@ const FindParkingNearMe = () => {
   const [nearestDistance, setNearestDistance] = useState(null);
   const [selectedParking, setSelectedParking] = useState(null);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredResults, setFilteredResults] = useState([]);
+
   const parkingLocations = [
     {
       name: "ParkFlow ITER Parking",
@@ -187,6 +190,39 @@ const FindParkingNearMe = () => {
     }
   };
 
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+
+    if (!value.trim()) {
+      setFilteredResults([]);
+      return;
+    }
+
+    const results = parkingLocations.filter(
+      (p) =>
+        p.name.toLowerCase().includes(value.toLowerCase()) ||
+        "parkflow".includes(value.toLowerCase()) ||
+        "parking".includes(value.toLowerCase()),
+    );
+
+    setFilteredResults(results);
+  };
+  const handleSelectParking = (parking) => {
+    setSelectedParking(parking);
+    setNearestParking(parking);
+
+    const distance = getDistanceKm(
+      location.lat,
+      location.lng,
+      parking.lat,
+      parking.lng,
+    );
+
+    setNearestDistance(distance.toFixed(2));
+    setFilteredResults([]);
+    setSearchTerm("");
+  };
+
   const handleRoute = (parking) => {
     setSelectedParking(parking);
   };
@@ -197,6 +233,55 @@ const FindParkingNearMe = () => {
   return (
     <DashboardLayout>
       <div style={{ height: "90vh", width: "100%", position: "relative" }}>
+        {/* SEARCH BAR */}
+        <div
+          style={{
+            position: "absolute",
+            top: "20px",
+            left: "60px",
+            zIndex: 1000,
+            width: "260px",
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Search parking..."
+            value={searchTerm}
+            onChange={(e) => handleSearch(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "10px",
+              borderRadius: "8px",
+              border: "1px solid #ccc",
+              outline: "none",
+              boxShadow: "0px 2px 8px rgba(0,0,0,0.2)",
+            }}
+          />
+
+          {filteredResults.length > 0 && (
+            <div
+              style={{
+                background: "white",
+                borderRadius: "8px",
+                marginTop: "5px",
+                boxShadow: "0px 4px 10px rgba(0,0,0,0.2)",
+              }}
+            >
+              {filteredResults.map((parking, index) => (
+                <div
+                  key={index}
+                  onClick={() => handleSelectParking(parking)}
+                  style={{
+                    padding: "10px",
+                    cursor: "pointer",
+                  }}
+                >
+                  {parking.name}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
         <div
           style={{
             position: "absolute",
