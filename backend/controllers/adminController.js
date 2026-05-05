@@ -130,3 +130,201 @@ exports.getRevenueStats = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// WEEKLY REVENUE
+exports.getWeeklyRevenue = async (req, res) => {
+  try {
+    const days = 7;
+
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+
+    const result = await Booking.aggregate([
+      {
+        $match: {
+          paymentStatus: "paid",
+          createdAt: { $gte: startDate },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: {
+              format: "%Y-%m-%d",
+              date: "$createdAt",
+            },
+          },
+          total: {
+            $sum: {
+              $cond: [
+                { $eq: ["$status", "cancelled"] },
+                10, // cancellation fee
+                "$cost", // full revenue
+              ],
+            },
+          },
+        },
+      },
+      {
+        $sort: { _id: 1 },
+      },
+    ]);
+
+    // generate last 7 days properly
+    const finalData = [];
+
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+
+      const formattedDate = d.toISOString().split("T")[0];
+
+      const dayName = d.toLocaleDateString("en-US", {
+        weekday: "short",
+      });
+
+      const found = result.find((r) => r._id === formattedDate);
+
+      finalData.push({
+        day: dayName,
+        revenue: found ? found.total : 0,
+      });
+    }
+
+    res.json(finalData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching revenue data" });
+  }
+};
+
+// PEAK HOURS
+exports.getPeakHours = async (req, res) => {
+  try {
+    const result = await Booking.aggregate([
+      {
+        $match: {
+          status: { $in: ["active", "completed"] },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $hour: {
+              date: "$entryTime",
+              timezone: "Asia/Kolkata",
+            },
+          },
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // convert to full 24h format
+    const hours = Array.from({ length: 24 }, (_, i) => {
+      const found = result.find((r) => r._id === i);
+      return {
+        hour: i,
+        count: found ? found.count : 0,
+      };
+    });
+
+    // convert to label (6A, 7A...)
+    const formatted = hours.map((h) => {
+      const hour = h.hour;
+      const label =
+        hour === 0
+          ? "12A"
+          : hour < 12
+            ? `${hour}A`
+            : hour === 12
+              ? "12P"
+              : `${hour - 12}P`;
+      return {
+        time: label,
+        value: h.count,
+      };
+    });
+
+    res.json(formatted);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching peak hours" });
+  }
+};
+
+// Utiliztaion Chart
+exports.getUtilization = async (req, res) => {
+  try {
+    const totalSlots = await Slot.countDocuments();
+
+    const available = await Slot.countDocuments({ status: "free" });
+    const occupied = await Slot.countDocuments({ status: "occupied" });
+    const reserved = await Slot.countDocuments({ status: "booked" });
+
+    const topSlotData = await Booking.aggregate([
+      {
+        $group: {
+          _id: "$slot",
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { count: -1 } },
+      { $limit: 1 },
+    ]);
+
+    let topSlot = "N/A";
+    let topSlotBookings = 0;
+
+    if (topSlotData.length > 0) {
+      const slotDoc = await Slot.findById(topSlotData[0]._id);
+      topSlot = slotDoc?.slotNumber || "N/A";
+      topSlotBookings = topSlotData[0].count;
+    }
+
+    const durationData = await Booking.aggregate([
+      {
+        $match: { status: "completed" },
+      },
+      {
+        $group: {
+          _id: null,
+          avgDuration: { $avg: "$duration" },
+        },
+      },
+    ]);
+
+    const avgDuration = durationData[0]?.avgDuration || 0;
+
+    const totalBookings = await Booking.countDocuments({
+      status: "completed",
+    });
+
+    const turnover = totalSlots > 0 ? totalBookings / totalSlots : 0;
+
+    const totalRecords = await Booking.countDocuments();
+    const validRecords = await Booking.countDocuments({
+      entryTime: { $ne: null },
+    });
+
+    const accuracy =
+      totalRecords > 0 ? ((validRecords / totalRecords) * 100).toFixed(1) : 10;
+
+    res.json({
+      totalSlots,
+      available,
+      occupied,
+      reserved,
+
+      topSlot,
+      topSlotBookings,
+
+      avgDuration: Number((avgDuration / 3600).toFixed(1)), // convert minutes → hours
+      turnover: Number(turnover.toFixed(1)),
+      accuracy: Number(accuracy),
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching utilization data" });
+  }
+};
