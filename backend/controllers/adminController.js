@@ -67,22 +67,6 @@ exports.getRecentBookings = async (req, res) => {
   }
 };
 
-// SLOT OCCUPANCY
-exports.getSlotStats = async (req, res) => {
-  try {
-    const free = await Slot.countDocuments({ status: "free" });
-    const occupied = await Slot.countDocuments({ status: "occupied" });
-    const booked = await Slot.countDocuments({ status: "booked" });
-
-    res.json({
-      free,
-      occupied,
-      booked,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 
 exports.getAlertSlots = async (req, res) => {
   try {
