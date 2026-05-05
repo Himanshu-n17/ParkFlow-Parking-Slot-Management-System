@@ -9,7 +9,7 @@ const {
   cancelBooking,
 } = require("../controllers/bookingController");
 
-const { protect } = require("../middleware/authMiddleware");
+const { protect, adminOnly } = require("../middleware/authMiddleware");
 
 // vehicle entry (camera or manual)
 router.post("/entry", vehicleEntry);
@@ -21,7 +21,7 @@ router.post("/exit", vehicleExit);
 router.get("/user/:userId", protect, getUserBookings);
 
 // admin bookings
-router.get("/", protect, getAllBookings);
+router.get("/", protect, adminOnly, getAllBookings);
 
 router.post("/cancel-booking", protect, cancelBooking);
 

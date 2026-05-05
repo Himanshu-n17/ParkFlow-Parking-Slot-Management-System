@@ -67,7 +67,6 @@ exports.getRecentBookings = async (req, res) => {
   }
 };
 
-
 exports.getAlertSlots = async (req, res) => {
   try {
     const alertSlots = await Slot.find({
@@ -310,5 +309,186 @@ exports.getUtilization = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error fetching utilization data" });
+  }
+};
+
+// GET /api/admin/slots
+exports.getAllSlots = async (req, res) => {
+  try {
+    const slots = await Slot.find().sort({ slotNumber: 1 });
+
+    res.json(slots);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching slots" });
+  }
+};
+
+// POST /api/admin/book
+exports.bookSlot = async (req, res) => {
+  try {
+    const { slotId, userId, vehicleNumber } = req.body;
+
+    const slot = await Slot.findById(slotId);
+
+    if (!slot) {
+      return res.status(404).json({ message: "Slot not found" });
+    }
+
+    if (slot.status !== "free") {
+      return res.status(400).json({ message: "Slot not available" });
+    }
+
+    const booking = await Booking.create({
+      user: userId,
+      slot: slotId,
+      vehicleNumber,
+      bookingType: "manual",
+      status: "active",
+      entryTime: new Date(),
+      duration: 0, // will update later
+    });
+
+    slot.status = "booked";
+    slot.currentVehicle = vehicleNumber;
+
+    await slot.save();
+
+    res.json({
+      message: "Slot booked successfully",
+      booking,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Booking failed" });
+  }
+};
+
+// PUT /api/admin/cancel/:slotId
+exports.cancelBooking = async (req, res) => {
+  try {
+    const { slotId } = req.params;
+
+    const booking = await Booking.findOne({
+      slot: slotId,
+      status: "active",
+    }).populate("user");
+
+    if (!booking) {
+      return res.status(404).json({ message: "No active booking found" });
+    }
+
+    // 💰 Refund logic (₹10 cancellation fee)
+    const refundAmount = (booking.cost || 0) - 10;
+
+    if (booking.user && refundAmount > 0) {
+      await User.findByIdAndUpdate(booking.user._id, {
+        $inc: { wallet: refundAmount },
+      });
+    }
+
+    booking.status = "cancelled";
+    booking.exitTime = new Date();
+
+    await booking.save();
+
+    await Slot.findByIdAndUpdate(slotId, {
+      status: "free",
+      currentVehicle: null,
+    });
+
+    res.json({
+      message: "Booking cancelled & refund processed",
+      refund: refundAmount > 0 ? refundAmount : 0,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Cancel failed" });
+  }
+};
+
+// PUT /api/admin/free/:slotId
+exports.freeSlot = async (req, res) => {
+  try {
+    const { slotId } = req.params;
+
+    const booking = await Booking.findOne({
+      slot: slotId,
+      status: "active",
+    });
+
+    if (!booking) {
+      return res.status(404).json({ message: "No active booking" });
+    }
+
+    booking.status = "completed";
+    booking.exitTime = new Date();
+
+    await booking.save();
+
+    await Slot.findByIdAndUpdate(slotId, {
+      status: "free",
+      currentVehicle: null,
+    });
+
+    res.json({
+      message: "Slot freed without billing",
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Free slot failed" });
+  }
+};
+
+exports.getAllUsersWithStats = async (req, res) => {
+  try {
+    const users = await User.aggregate([
+      {
+        $lookup: {
+          from: "bookings",
+          localField: "_id",
+          foreignField: "user",
+          as: "bookings",
+        },
+      },
+      {
+        $addFields: {
+          totalBookings: { $size: "$bookings" },
+
+          totalSpent: {
+            $sum: {
+              $map: {
+                input: "$bookings",
+                as: "b",
+                in: {
+                  $cond: [
+                    { $eq: ["$$b.status", "completed"] },
+                    "$$b.cost", // full cost
+
+                    {
+                      $cond: [
+                        { $eq: ["$$b.status", "cancelled"] },
+                        10, // cancellation fee
+                        0,
+                      ],
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          name: 1,
+          email: 1,
+          totalBookings: 1,
+          totalSpent: 1,
+        },
+      },
+    ]);
+
+    res.json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching users" });
   }
 };

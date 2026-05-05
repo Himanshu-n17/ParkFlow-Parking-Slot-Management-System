@@ -10,10 +10,10 @@ const {
   bookSlot,
 } = require("../controllers/slotController");
 
-const { protect } = require("../middleware/authMiddleware");
+const { protect, adminOnly } = require("../middleware/authMiddleware");
 
 // admin create slot
-router.post("/", protect, createSlot);
+router.post("/", protect, adminOnly, createSlot);
 
 // get all slots
 router.get("/", getSlots);
@@ -24,7 +24,7 @@ router.post("/book-slot", bookSlot);
 router.put("/:id", protect, updateSlotStatus);
 
 // delete slot
-router.delete("/:id", protect, deleteSlot);
+router.delete("/:id", protect, adminOnly, deleteSlot);
 
 // sensor update slot
 router.post("/sensor-update", sensorUpdateSlot);

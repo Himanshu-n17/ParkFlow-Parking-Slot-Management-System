@@ -21,10 +21,10 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/slots", slotRoutes);
 app.use("/api/bookings", bookingRoutes);
-app.use("/api/anpr", anprRoutes);
+app.use("/api/admin/anpr", anprRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/user", userRoutes);
-app.use("/api/reports", reportRoutes);
+app.use("/api/admin/reports", reportRoutes);
 
 app.get("/", (req, res) => {
   res.send("Smart Parking API Running 🚗");
