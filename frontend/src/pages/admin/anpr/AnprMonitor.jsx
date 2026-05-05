@@ -33,7 +33,7 @@ const AnprMonitor = () => {
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
       const image = canvas.toDataURL("image/jpeg", 0.8);
-      const response = await API.post("/anpr/detect", { image });
+      const response = await API.post("admin/anpr/detect", { image });
       const result = response.data;
 
       if (result.detected && result.plate) {
@@ -71,7 +71,7 @@ const AnprMonitor = () => {
 
   const loadMyDetections = async () => {
     try {
-      const response = await API.get("/anpr/my-detections");
+      const response = await API.get("admin/anpr/my-detections");
       setSavedDetections(response.data || []);
     } catch {
       // Ignore history fetch failures so live scanning still works.

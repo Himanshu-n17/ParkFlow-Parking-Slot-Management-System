@@ -22,6 +22,22 @@ exports.createSlot = async (req, res) => {
   try {
     const { slotNumber, floor, sector, sensorId } = req.body;
 
+    if (!slotNumber) {
+      return res.status(400).json({ message: "Slot number is required" });
+    }
+
+    const existingSlot = await Slot.findOne({ slotNumber });
+    if (existingSlot) {
+      return res.status(400).json({ message: "Slot already exists" });
+    }
+
+    if (sensorId) {
+      const existingSensor = await Slot.findOne({ sensorId });
+      if (existingSensor) {
+        return res.status(400).json({ message: "Sensor already assigned" });
+      }
+    }
+
     const slot = await Slot.create({
       slotNumber,
       floor,
@@ -249,8 +265,6 @@ exports.sensorUpdateSlot = async (req, res) => {
         },
         { new: true },
       );
-
-      console.log("Completed booking:", booking);
     }
 
     res.json({
@@ -267,10 +281,28 @@ exports.sensorUpdateSlot = async (req, res) => {
 // DELETE SLOT
 exports.deleteSlot = async (req, res) => {
   try {
-    await Slot.findByIdAndDelete(req.params.id);
+    const { id } = req.params;
+
+    const slot = await Slot.findById(id);
+    if (!slot) {
+      return res.status(404).json({ message: "Slot not found" });
+    }
+
+    const activeBooking = await Booking.findOne({
+      slot: id,
+      status: "active",
+    });
+
+    if (activeBooking) {
+      return res.status(400).json({
+        message: "Cannot delete slot with active booking",
+      });
+    }
+
+    await Slot.findByIdAndDelete(id);
 
     res.json({
-      message: "Slot deleted",
+      message: "Slot deleted successfully",
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

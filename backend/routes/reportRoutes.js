@@ -6,12 +6,12 @@ const {
   downloadRevenueReport,
 } = require("../controllers/reportController");
 
-const { protect } = require("../middleware/authMiddleware");
+const { protect, adminOnly } = require("../middleware/authMiddleware");
 
 // booking report
-router.get("/bookings", protect, downloadBookingReport);
+router.get("/bookings", protect, adminOnly, downloadBookingReport);
 
 // revenue report
-router.get("/revenue", protect, downloadRevenueReport);
+router.get("/revenue", protect, adminOnly, downloadRevenueReport);
 
 module.exports = router;

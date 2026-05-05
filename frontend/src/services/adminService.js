@@ -19,3 +19,35 @@ export const getUtilization = async () => {
   const res = await API.get("/admin/utilization");
   return res.data;
 };
+
+export const getAllSlots = async () => {
+  const res = await API.get("/admin/slots");
+  return res.data;
+};
+
+export const bookSlot = async (data) => {
+  return API.post("/admin/book", data);
+};
+
+export const cancelBooking = async (slotId) => {
+  return API.put(`/admin/cancel/${slotId}`);
+};
+
+export const freeSlot = async (slotId) => {
+  return API.put(`/admin/free/${slotId}`);
+};
+
+export const createSlot = async (slotData) => {
+  const res = await API.post("/slots", slotData);
+  return res.data;
+};
+
+export const deleteSlot = async (slotId) => {
+  const res = await API.delete(`/slots/${slotId}`);
+  return res.data;
+};
+
+export const getAllUsers = async () => {
+  const res = await API.get("/admin/users");
+  return res.data;
+};
