@@ -5,14 +5,25 @@ import RevenueChart from "../../../components/charts/RevenueChart";
 import UtilizationChart from "../../../components/charts/UtilizationChart";
 import { StatCard } from "../../../components/common/Card";
 import SystemStatus from "../../../components/SystemStatus";
-import { getAdminStats } from "../../../services/adminService";
+import {
+  getAdminStats,
+  getPeakHours,
+  getUtilization,
+  getWeeklyRevenue,
+} from "../../../services/adminService";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [weeklyData, setWeeklyData] = useState([]);
+  const [peakData, setPeakData] = useState([]);
+  const [utilData, setUtilData] = useState(null);
 
   useEffect(() => {
     fetchStats();
+    fetchRevenue();
+    fetchPeakHours();
+    fetchUtilization();
   }, []);
 
   const fetchStats = async () => {
@@ -23,6 +34,30 @@ const AdminDashboard = () => {
       console.error("Error fetching admin stats:", error);
     } finally {
       setLoading(false);
+    }
+  };
+  const fetchRevenue = async () => {
+    try {
+      const data = await getWeeklyRevenue();
+      setWeeklyData(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  const fetchPeakHours = async () => {
+    try {
+      const data = await getPeakHours();
+      setPeakData(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  const fetchUtilization = async () => {
+    try {
+      const data = await getUtilization();
+      setUtilData(data);
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -69,7 +104,7 @@ const AdminDashboard = () => {
         />
 
         <div className="weekly-revenue ">
-          <RevenueChart />
+          <RevenueChart data={weeklyData} />
         </div>
 
         <div className="system-status dashboard-card">
@@ -80,15 +115,20 @@ const AdminDashboard = () => {
         </div>
 
         <div className="peak-hours">
-          <PeakHourChart />
+          <PeakHourChart data={peakData} />
         </div>
 
         <div className="slot-distribution">
           <UtilizationChart
-            available={stats.freeSlots}
-            occupied={stats.occupiedSlots}
-            reserved={stats.bookedSlots}
-            total={stats.totalSlots}
+            available={utilData?.available}
+            occupied={utilData?.occupied}
+            reserved={utilData?.reserved}
+            total={utilData?.totalSlots}
+            topSlot={utilData?.topSlot}
+            topSlotBookings={utilData?.topSlotBookings}
+            avgDuration={utilData?.avgDuration}
+            turnover={utilData?.turnover}
+            accuracy={utilData?.accuracy}
           />
         </div>
       </div>
