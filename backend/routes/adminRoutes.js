@@ -15,6 +15,7 @@ const {
   freeSlot,
   getAllUsersWithStats,
   getAllTransactions,
+  updateUser,
 } = require("../controllers/adminController");
 
 const { protect, adminOnly } = require("../middleware/authMiddleware");
@@ -43,4 +44,6 @@ router.put("/free/:slotId", protect, adminOnly, freeSlot);
 router.get("/users", protect, adminOnly, getAllUsersWithStats);
 
 router.get("/transactions", protect, adminOnly, getAllTransactions);
+
+router.put("/users/:id", protect, adminOnly, updateUser);
 module.exports = router;

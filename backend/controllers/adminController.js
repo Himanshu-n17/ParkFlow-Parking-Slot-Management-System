@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const Slot = require("../models/Slot");
 const Booking = require("../models/Booking");
+const bcrypt = require("bcryptjs");
 
 // DASHBOARD STATS
 exports.getDashboardStats = async (req, res) => {
@@ -541,4 +542,38 @@ exports.getAllTransactions = async (req, res) => {
     });
   }
 };
- 
+
+exports.updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { name, email, password, vehicleNumber } = req.body;
+
+    const updateData = {
+      name,
+      email,
+      vehicleNumber,
+    };
+
+    if (password && password.trim() !== "") {
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      updateData.password = hashedPassword;
+    }
+
+    const user = await User.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
+
+    res.json({
+      message: "User updated successfully",
+      user,
+    });
+  } catch (error) {
+    // console.error(error);
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
