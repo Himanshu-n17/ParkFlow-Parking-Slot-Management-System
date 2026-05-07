@@ -64,3 +64,9 @@ export const downloadRevenueReport = async () => {
 
   return response.data;
 };
+
+export const updateUser = async (id, payload) => {
+  const response = await API.put(`/admin/users/${id}`, payload);
+
+  return response.data;
+};

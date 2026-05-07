@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../../components/layout/DashboardLayout";
-import { AddUserModal } from "../../../components/common/AdminModal";
+import {
+  AddUserModal,
+  EditUserModal,
+} from "../../../components/common/AdminModal";
 import { getAllUsers } from "../../../services/adminService";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
   const [openModal, setOpenModal] = useState(false);
+  const [editModal, setEditModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/immutability
@@ -80,7 +85,15 @@ const Users = () => {
 
                 <div className="admin-user-status active">Active</div>
 
-                <button className="admin-user-btn edit">Edit</button>
+                <button
+                  className="admin-user-btn edit"
+                  onClick={() => {
+                    setSelectedUser(user);
+                    setEditModal(true);
+                  }}
+                >
+                  Edit
+                </button>
 
                 <button className="admin-user-btn block">Block</button>
               </div>
@@ -92,6 +105,12 @@ const Users = () => {
       <AddUserModal
         open={openModal}
         onClose={() => setOpenModal(false)}
+        refresh={fetchUsers}
+      />
+      <EditUserModal
+        open={editModal}
+        onClose={() => setEditModal(false)}
+        user={selectedUser}
         refresh={fetchUsers}
       />
     </DashboardLayout>

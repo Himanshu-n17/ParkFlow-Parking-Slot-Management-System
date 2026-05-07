@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getAllUsers, bookSlot } from "../../services/adminService";
+import { getAllUsers, bookSlot, updateUser } from "../../services/adminService";
 import { sendOtp, verifyOtp } from "../../services/authService";
 import toast from "react-hot-toast";
 
@@ -235,6 +235,102 @@ export const AddUserModal = ({ open, onClose, refresh }) => {
             </button>
           </>
         )}
+      </div>
+    </div>
+  );
+};
+
+export const EditUserModal = ({ open, onClose, user, refresh }) => {
+  const [loading, setLoading] = useState(false);
+
+  const [formData, setFormData] = useState({
+    name: user?.name || "",
+    email: user?.email || "",
+    vehicleNumber: user?.vehicleNumber || "",
+    password: "",
+  });
+
+  if (!open || !user) return null;
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleUpdate = async () => {
+    try {
+      setLoading(true);
+
+      await updateUser(user._id, formData);
+
+      toast.success("User updated successfully");
+
+      refresh();
+
+      onClose();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Update failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="admin-edit-modal-overlay">
+      <div className="admin-edit-modal-card">
+        <button className="admin-edit-close" onClick={onClose}>
+          ✕
+        </button>
+
+        <h2>Edit User</h2>
+
+        <p>Update user details & vehicle</p>
+
+        <input
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          placeholder="Full Name"
+          className="admin-edit-input"
+        />
+
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          placeholder="Email"
+          className="admin-edit-input"
+        />
+
+        <input
+          type="text"
+          name="vehicleNumber"
+          value={formData.vehicleNumber}
+          onChange={handleChange}
+          placeholder="Vehicle Number"
+          className="admin-edit-input"
+        />
+
+        <input
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          placeholder="New Password (optional)"
+          className="admin-edit-input"
+        />
+
+        <button
+          className="admin-edit-save-btn"
+          onClick={handleUpdate}
+          disabled={loading}
+        >
+          {loading ? "Updating..." : "Save Changes"}
+        </button>
       </div>
     </div>
   );

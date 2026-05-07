@@ -688,7 +688,7 @@
   transform: translateY(-2px);
 }
 
-/* =================  Admin Add User Modal   ================== */
+/* =================  Admin Users Add User Modal   ================== */
 .admin-user-modal-overlay {
   position: fixed;
   inset: 0;
@@ -804,4 +804,86 @@
   margin-top: 6px;
   color: #10b981;
   font-weight: 600;
+}
+
+/* =================  Admin Users Edit User Modal   ================== */
+.admin-edit-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.admin-edit-modal-card {
+  width: 440px;
+  padding: 34px;
+  border-radius: 28px;
+  background: linear-gradient(
+    145deg,
+    rgba(17, 24, 39, 0.98),
+    rgba(10, 15, 35, 0.98)
+  );
+  border: 1px solid rgba(99, 102, 241, 0.18);
+  position: relative;
+  box-shadow:
+    0 30px 70px rgba(0, 0, 0, 0.45),
+    0 0 35px rgba(99, 102, 241, 0.15);
+}
+
+.admin-edit-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.06);
+  color: white;
+  cursor: pointer;
+}
+
+.admin-edit-modal-card h2 {
+  color: white;
+  margin-bottom: 8px;
+}
+
+.admin-edit-modal-card p {
+  color: #8b90b5;
+  margin-bottom: 26px;
+}
+
+.admin-edit-input {
+  width: 100%;
+  padding: 16px;
+  border-radius: 16px;
+  margin-bottom: 18px;
+  border: 1px solid rgba(99, 102, 241, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  color: white;
+  outline: none;
+}
+
+.admin-edit-input:focus {
+  border-color: #6366f1;
+}
+
+.admin-edit-save-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 18px;
+  border: none;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.admin-edit-save-btn:hover {
+  transform: translateY(-2px);
 }
