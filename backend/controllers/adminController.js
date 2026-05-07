@@ -441,6 +441,11 @@ exports.getAllUsersWithStats = async (req, res) => {
   try {
     const users = await User.aggregate([
       {
+        $match: {
+          role: "user",
+        },
+      },
+      {
         $lookup: {
           from: "bookings",
           localField: "_id",
@@ -536,3 +541,4 @@ exports.getAllTransactions = async (req, res) => {
     });
   }
 };
+ 

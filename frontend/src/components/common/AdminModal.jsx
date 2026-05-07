@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { getAllUsers, bookSlot } from "../../services/adminService";
+import { sendOtp, verifyOtp } from "../../services/authService";
+import toast from "react-hot-toast";
 
-const AdminBookingModal = ({ slot, onClose, onSuccess }) => {
+// Admin Side Booking Slot
+export const AdminBookingModal = ({ slot, onClose, onSuccess }) => {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState("");
   const [vehicleNumber, setVehicleNumber] = useState("");
@@ -81,4 +84,158 @@ const AdminBookingModal = ({ slot, onClose, onSuccess }) => {
   );
 };
 
-export default AdminBookingModal;
+// Admin add user Modal
+export const AddUserModal = ({ open, onClose, refresh }) => {
+  const [step, setStep] = useState(1);
+
+  const [loading, setLoading] = useState(false);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    otp: "",
+  });
+
+  if (!open) return null;
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  // SEND OTP
+
+  const handleSendOtp = async () => {
+    try {
+      setLoading(true);
+
+      await sendOtp({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        role: "user",
+      });
+
+      toast.success("OTP sent");
+
+      setStep(2);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to send OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // VERIFY OTP
+
+  const handleVerifyOtp = async () => {
+    try {
+      setLoading(true);
+
+      await verifyOtp({
+        email: formData.email,
+        otp: formData.otp,
+      });
+
+      toast.success("User created successfully");
+
+      refresh();
+
+      onClose();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "OTP verification failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="admin-user-modal-overlay">
+      <div className="admin-user-modal-card">
+        {/* CLOSE */}
+
+        <button className="admin-user-modal-close" onClick={onClose}>
+          ✕
+        </button>
+
+        {/* TITLE */}
+
+        <h2>Add New User</h2>
+
+        <p>Create and verify user account</p>
+
+        {/* STEP 1 */}
+
+        {step === 1 && (
+          <>
+            <input
+              type="text"
+              name="name"
+              placeholder="Full Name"
+              value={formData.name}
+              onChange={handleChange}
+              className="admin-user-modal-input"
+            />
+
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              value={formData.email}
+              onChange={handleChange}
+              className="admin-user-modal-input"
+            />
+
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              className="admin-user-modal-input"
+            />
+
+            <button
+              className="admin-user-modal-btn"
+              onClick={handleSendOtp}
+              disabled={loading}
+            >
+              {loading ? "Sending OTP..." : "Send OTP"}
+            </button>
+          </>
+        )}
+
+        {/* STEP 2 */}
+
+        {step === 2 && (
+          <>
+            <div className="admin-user-otp-info">
+              OTP sent to:
+              <span>{formData.email}</span>
+            </div>
+
+            <input
+              type="text"
+              name="otp"
+              placeholder="Enter OTP"
+              value={formData.otp}
+              onChange={handleChange}
+              className="admin-user-modal-input"
+            />
+
+            <button
+              className="admin-user-modal-btn"
+              onClick={handleVerifyOtp}
+              disabled={loading}
+            >
+              {loading ? "Verifying..." : "Verify & Create User"}
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
