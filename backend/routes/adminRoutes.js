@@ -14,6 +14,7 @@ const {
   cancelBooking,
   freeSlot,
   getAllUsersWithStats,
+  getAllTransactions,
 } = require("../controllers/adminController");
 
 const { protect, adminOnly } = require("../middleware/authMiddleware");
@@ -35,9 +36,11 @@ router.get("/peak-hours", protect, adminOnly, getPeakHours);
 
 router.get("/utilization", protect, adminOnly, getUtilization);
 
-router.get("/slots",protect, adminOnly, getAllSlots);
-router.post("/book",protect, adminOnly, bookSlot);
+router.get("/slots", protect, adminOnly, getAllSlots);
+router.post("/book", protect, adminOnly, bookSlot);
 router.put("/cancel/:slotId", protect, adminOnly, cancelBooking);
 router.put("/free/:slotId", protect, adminOnly, freeSlot);
 router.get("/users", protect, adminOnly, getAllUsersWithStats);
+
+router.get("/transactions", protect, adminOnly, getAllTransactions);
 module.exports = router;
