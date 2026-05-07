@@ -359,3 +359,180 @@
   justify-content: space-between;
   margin-top: 10px;
 }
+
+/* ======================================  Transactions Page  ============================================= */
+.admin-transactions-page {
+  color: white;
+}
+
+.admin-transaction-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  gap: 22px;
+  flex: 1;
+}
+
+.admin-transaction-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 30px;
+}
+
+.admin-transaction-card {
+  background: linear-gradient(
+    145deg,
+    rgba(17, 24, 39, 0.95),
+    rgba(10, 15, 35, 0.95)
+  );
+  border: 1px solid rgba(99, 102, 241, 0.12);
+  border-radius: 22px;
+  padding: 24px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.admin-transaction-card::before {
+  content: "";
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 100px;
+  height: 100px;
+  background: rgba(99, 102, 241, 0.15);
+  border-radius: 50%;
+  filter: blur(30px);
+}
+
+.admin-transaction-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.35),
+    0 0 30px rgba(99, 102, 241, 0.15);
+}
+
+.admin-transaction-card h2 {
+  font-size: 34px;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.admin-transaction-card:nth-child(1) h2 {
+  color: #10b981;
+}
+
+.admin-transaction-card:nth-child(2) h2 {
+  color: #8b5cf6;
+}
+
+.admin-transaction-card:nth-child(3) h2 {
+  color: #3b82f6;
+}
+
+.admin-transaction-card:nth-child(4) h2 {
+  color: #f59e0b;
+}
+
+.admin-transaction-card p {
+  color: #9ca3af;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+}
+
+.export-btn {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border: none;
+  color: white;
+  padding: 16px 24px;
+  border-radius: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.25);
+  white-space: nowrap;
+
+  height: fit-content;
+
+  margin-top: 6px;
+}
+
+.export-btn:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 15px 35px rgba(99, 102, 241, 0.4),
+    0 0 20px rgba(139, 92, 246, 0.3);
+}
+
+.admin-transactions-table {
+  background: rgba(17, 24, 39, 0.8);
+  border-radius: 24px;
+  padding: 20px;
+}
+
+.admin-transactions-header,
+.admin-transaction-row {
+  display: grid;
+  grid-template-columns:
+    0.7fr
+    1fr
+    1fr
+    1fr
+    1fr
+    0.5fr
+    0.8fr
+    0.8fr;
+
+  align-items: center;
+
+  padding: 16px 10px;
+}
+
+.admin-transactions-header {
+  color: #9ca3af;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-transaction-row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.slot-pill {
+  background: rgba(99, 102, 241, 0.2);
+  color: #8b5cf6;
+  padding: 6px 12px;
+  border-radius: 10px;
+  width: fit-content;
+}
+
+.amount {
+  color: #10b981;
+  font-weight: 700;
+}
+
+.status {
+  width: fit-content;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  text-transform: capitalize;
+}
+
+.status.completed {
+  background: rgba(16, 185, 129, 0.18);
+  color: #10b981;
+}
+
+.status.cancelled {
+  background: rgba(239, 68, 68, 0.18);
+  color: #ef4444;
+}
+
+.status.active {
+  background: rgba(59, 130, 246, 0.18);
+  color: #3b82f6;
+}

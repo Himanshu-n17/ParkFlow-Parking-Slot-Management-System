@@ -37,25 +37,71 @@ exports.downloadBookingReport = async (req, res) => {
 // DAILY REVENUE REPORT
 exports.downloadRevenueReport = async (req, res) => {
   try {
-    const bookings = await Booking.find({
-      status: "completed",
+    const bookings = await Booking.find()
+      .populate("user", "name email")
+      .populate("slot", "slotNumber")
+      .sort({ createdAt: -1 });
+
+    const report = bookings.map((b) => {
+      // cancelled booking fee
+      const amount = b.status === "cancelled" ? 10 : b.cost || 0;
+
+      // duration in hours
+      const durationHours = b.duration ? (b.duration / 3600).toFixed(2) : 0;
+
+      return {
+        BookingID: b._id,
+
+        User: b.user?.name || "N/A",
+
+        Email: b.user?.email || "N/A",
+
+        Slot: b.slot?.slotNumber || "N/A",
+
+        Vehicle: b.vehicleNumber,
+
+        Status: b.status.toUpperCase(),
+
+        EntryTime: b.entryTime ? new Date(b.entryTime).toLocaleString() : "-",
+
+        ExitTime: b.exitTime ? new Date(b.exitTime).toLocaleString() : "-",
+
+        DurationHours: durationHours,
+
+        Amount: `Rs ${amount}`,
+
+        PaymentStatus: b.paymentStatus || "pending",
+      };
     });
 
-    const report = bookings.map((b) => ({
-      vehicleNumber: b.vehicleNumber,
-      entryTime: b.entryTime,
-      exitTime: b.exitTime,
-      cost: b.cost,
-    }));
+    const fields = [
+      "BookingID",
+      "User",
+      "Email",
+      "Slot",
+      "Vehicle",
+      "Status",
+      "EntryTime",
+      "ExitTime",
+      "DurationHours",
+      "Amount",
+      "PaymentStatus",
+    ];
 
-    const json2csv = new Parser();
+    const json2csv = new Parser({ fields });
+
     const csv = json2csv.parse(report);
 
     res.header("Content-Type", "text/csv");
-    res.attachment("revenue_report.csv");
+
+    res.attachment(`transaction_report_${Date.now()}.csv`);
 
     res.send(csv);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };

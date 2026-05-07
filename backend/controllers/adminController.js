@@ -492,3 +492,47 @@ exports.getAllUsersWithStats = async (req, res) => {
     res.status(500).json({ message: "Error fetching users" });
   }
 };
+
+exports.getAllTransactions = async (req, res) => {
+  try {
+    const transactions = await Booking.find()
+      .populate("user", "name email role")
+      .populate("slot", "slotNumber")
+      .sort({ createdAt: -1 });
+
+    const filtered = transactions.filter(
+      (t) => t.user && t.user.role === "user",
+    );
+
+    const formatted = filtered.map((t) => {
+      let amount = 0;
+
+      if (t.status === "completed") {
+        amount = t.cost || 0;
+      }
+
+      // ❌ cancelled booking
+      else if (t.status === "cancelled") {
+        amount = 10;
+      }
+
+      return {
+        _id: t._id,
+        slot: t.slot?.slotNumber || "N/A",
+        user: t.user?.name || "Unknown",
+        vehicle: t.vehicleNumber,
+        entryTime: t.entryTime,
+        exitTime: t.exitTime,
+        duration: t.duration || 0,
+        amount,
+        status: t.status,
+      };
+    });
+    res.json(formatted);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Failed to fetch transactions",
+    });
+  }
+};

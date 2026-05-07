@@ -51,3 +51,16 @@ export const getAllUsers = async () => {
   const res = await API.get("/admin/users");
   return res.data;
 };
+
+export const getAllTransactions = async () => {
+  const res = await API.get("/admin/transactions");
+  return res.data;
+};
+
+export const downloadRevenueReport = async () => {
+  const response = await API.get("/admin/reports/revenue", {
+    responseType: "blob",
+  });
+
+  return response.data;
+};
