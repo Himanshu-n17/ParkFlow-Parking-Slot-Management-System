@@ -536,3 +536,272 @@
   background: rgba(59, 130, 246, 0.18);
   color: #3b82f6;
 }
+
+/* ======================================   USERS PAGE    ====================================== */
+.admin-users-page {
+  padding: 10px;
+}
+
+.admin-users-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.admin-users-header h1 {
+  font-size: 34px;
+  color: white;
+  margin-bottom: 8px;
+}
+
+.admin-users-header p {
+  color: #8b90b5;
+}
+
+.admin-add-user-btn {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border: none;
+  padding: 14px 28px;
+  border-radius: 18px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+}
+
+.admin-add-user-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
+}
+
+.admin-users-list {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.admin-user-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-radius: 24px;
+  background: linear-gradient(
+    145deg,
+    rgba(17, 24, 39, 0.95),
+    rgba(10, 15, 35, 0.95)
+  );
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  transition: all 0.3s ease;
+}
+
+.admin-user-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(99, 102, 241, 0.35);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.35),
+    0 0 25px rgba(99, 102, 241, 0.15);
+}
+
+.admin-user-left {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.admin-user-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  font-weight: 700;
+  font-size: 22px;
+}
+
+.admin-user-left h3 {
+  color: white;
+  margin-bottom: 6px;
+}
+
+.admin-user-left p {
+  color: #8b90b5;
+}
+
+.admin-user-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.admin-user-stats {
+  text-align: right;
+}
+
+.admin-user-stats span {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.admin-user-stats h4 {
+  color: #10b981;
+  margin-top: 5px;
+}
+
+.admin-user-status {
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.admin-user-status.active {
+  background: rgba(16, 185, 129, 0.18);
+  color: #6ee7b7;
+}
+
+.admin-user-btn {
+  border: none;
+  padding: 12px 20px;
+  border-radius: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.admin-user-btn.edit {
+  background: rgba(99, 102, 241, 0.15);
+  color: #8b5cf6;
+}
+
+.admin-user-btn.block {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
+
+.admin-user-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* =================  Admin Add User Modal   ================== */
+.admin-user-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.admin-user-modal-card {
+  width: 430px;
+  background: linear-gradient(
+    145deg,
+    rgba(17, 24, 39, 0.98),
+    rgba(10, 15, 35, 0.98)
+  );
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 28px;
+  padding: 34px;
+  position: relative;
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.45),
+    0 0 40px rgba(99, 102, 241, 0.15);
+  animation: adminModalPop 0.25s ease;
+}
+
+@keyframes adminModalPop {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.admin-user-modal-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.admin-user-modal-close:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.admin-user-modal-card h2 {
+  color: white;
+  font-size: 30px;
+  margin-bottom: 8px;
+}
+
+.admin-user-modal-card p {
+  color: #8b90b5;
+  margin-bottom: 26px;
+}
+
+.admin-user-modal-input {
+  width: 100%;
+  padding: 16px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  background: rgba(255, 255, 255, 0.04);
+  color: white;
+  outline: none;
+  margin-bottom: 18px;
+  transition: all 0.25s ease;
+}
+
+.admin-user-modal-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+}
+
+.admin-user-modal-btn {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.admin-user-modal-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(99, 102, 241, 0.35);
+}
+
+.admin-user-otp-info {
+  color: #9ca3af;
+  margin-bottom: 18px;
+  font-size: 14px;
+}
+
+.admin-user-otp-info span {
+  display: block;
+  margin-top: 6px;
+  color: #10b981;
+  font-weight: 600;
+}

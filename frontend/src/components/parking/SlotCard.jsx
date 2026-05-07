@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { cancelBooking, freeSlot } from "../../services/adminService";
-import AdminBookingModal from "../../components/common/AdminModal";
+import { AdminBookingModal } from "../../components/common/AdminModal";
 
 const SlotCard = ({ slot, refresh }) => {
   const [showModal, setShowModal] = useState(false);
