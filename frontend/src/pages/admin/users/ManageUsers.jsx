@@ -4,7 +4,7 @@ import {
   AddUserModal,
   EditUserModal,
 } from "../../../components/common/AdminModal";
-import { getAllUsers } from "../../../services/adminService";
+import { getAllUsers, toggleBlockUser } from "../../../services/adminService";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -34,6 +34,15 @@ const Users = () => {
       .join("")
       .slice(0, 2)
       .toUpperCase();
+  };
+  const handleBlockUser = async (userId) => {
+    try {
+      await toggleBlockUser(userId);
+
+      fetchUsers();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -83,7 +92,13 @@ const Users = () => {
                   <h4>Rs {user.totalSpent} spent</h4>
                 </div>
 
-                <div className="admin-user-status active">Active</div>
+                <div
+                  className={`admin-user-status ${
+                    user.isBlocked ? "blocked" : "active"
+                  }`}
+                >
+                  {user.isBlocked ? "Blocked" : "Active"}
+                </div>
 
                 <button
                   className="admin-user-btn edit"
@@ -95,7 +110,14 @@ const Users = () => {
                   Edit
                 </button>
 
-                <button className="admin-user-btn block">Block</button>
+                <button
+                  className={`admin-user-btn ${
+                    user.isBlocked ? "unblock" : "block"
+                  }`}
+                  onClick={() => handleBlockUser(user._id)}
+                >
+                  {user.isBlocked ? "Unblock" : "Block"}
+                </button>
               </div>
             </div>
           ))}

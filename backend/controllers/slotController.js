@@ -123,6 +123,13 @@ exports.bookSlot = async (req, res) => {
       });
     }
 
+    if (user.isBlocked) {
+      return res.status(403).json({
+        message:
+          "Your account has been blocked. Please contact admin at admin.parkflow@gmail.com",
+      });
+    }
+
     if (user.wallet < cost) {
       return res.status(400).json({
         message: "Insufficient wallet balance",

@@ -61,12 +61,15 @@ export const downloadRevenueReport = async () => {
   const response = await API.get("/admin/reports/revenue", {
     responseType: "blob",
   });
-
   return response.data;
 };
 
 export const updateUser = async (id, payload) => {
   const response = await API.put(`/admin/users/${id}`, payload);
+  return response.data;
+};
 
+export const toggleBlockUser = async (id) => {
+  const response = await API.put(`/admin/users/block/${id}`);
   return response.data;
 };

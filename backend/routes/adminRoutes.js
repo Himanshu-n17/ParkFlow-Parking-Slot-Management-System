@@ -16,6 +16,7 @@ const {
   getAllUsersWithStats,
   getAllTransactions,
   updateUser,
+  toggleBlockUser,
 } = require("../controllers/adminController");
 
 const { protect, adminOnly } = require("../middleware/authMiddleware");
@@ -46,4 +47,6 @@ router.get("/users", protect, adminOnly, getAllUsersWithStats);
 router.get("/transactions", protect, adminOnly, getAllTransactions);
 
 router.put("/users/:id", protect, adminOnly, updateUser);
+
+router.put("/users/block/:id", protect, adminOnly, toggleBlockUser);
 module.exports = router;
