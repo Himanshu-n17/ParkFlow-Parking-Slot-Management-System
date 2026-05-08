@@ -488,6 +488,7 @@ exports.getAllUsersWithStats = async (req, res) => {
           email: 1,
           totalBookings: 1,
           totalSpent: 1,
+          isBlocked: 1,
         },
       },
     ]);
@@ -571,6 +572,36 @@ exports.updateUser = async (req, res) => {
     });
   } catch (error) {
     // console.error(error);
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+exports.toggleBlockUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    user.isBlocked = !user.isBlocked;
+
+    await user.save();
+
+    res.json({
+      message: user.isBlocked ? "User blocked" : "User unblocked",
+
+      isBlocked: user.isBlocked,
+    });
+  } catch (error) {
+    console.error(error);
 
     res.status(500).json({
       message: error.message,

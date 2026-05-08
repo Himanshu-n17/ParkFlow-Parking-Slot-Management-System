@@ -661,8 +661,15 @@
 }
 
 .admin-user-status.active {
-  background: rgba(16, 185, 129, 0.18);
+  background: rgba(16, 185, 129, 0.16);
   color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.admin-user-status.blocked {
+  background: rgba(239, 68, 68, 0.14);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.25);
 }
 
 .admin-user-btn {
@@ -677,15 +684,36 @@
 .admin-user-btn.edit {
   background: rgba(99, 102, 241, 0.15);
   color: #8b5cf6;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.admin-user-btn.edit:hover {
+  background: rgba(99, 102, 241, 0.22);
+  transform: translateY(-2px);
 }
 
 .admin-user-btn.block {
   background: rgba(239, 68, 68, 0.12);
   color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
-.admin-user-btn:hover {
+.admin-user-btn.block:hover {
+  background: rgba(239, 68, 68, 0.2);
   transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.18);
+}
+
+.admin-user-btn.unblock {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.22);
+}
+
+.admin-user-btn.unblock:hover {
+  background: rgba(16, 185, 129, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.18);
 }
 
 /* =================  Admin Users Add User Modal   ================== */
