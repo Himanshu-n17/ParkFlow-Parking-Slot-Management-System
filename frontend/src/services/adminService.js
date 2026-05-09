@@ -73,3 +73,8 @@ export const toggleBlockUser = async (id) => {
   const response = await API.put(`/admin/users/block/${id}`);
   return response.data;
 };
+
+export const getFloorUtilization = async () => {
+  const res = await API.get("/admin/floor-utilization");
+  return res.data;
+};

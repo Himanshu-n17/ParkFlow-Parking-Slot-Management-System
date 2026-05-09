@@ -608,3 +608,62 @@ exports.toggleBlockUser = async (req, res) => {
     });
   }
 };
+
+exports.getFloorUtilization = async (req, res) => {
+  try {
+    const slots = await Slot.find();
+
+    const grouped = {};
+
+    slots.forEach((slot) => {
+      const key = `${slot.floor}-${slot.sector}`;
+
+      if (!grouped[key]) {
+        grouped[key] = {
+          floor: slot.floor,
+          sector: slot.sector,
+          total: 0,
+          occupied: 0,
+        };
+      }
+
+      grouped[key].total += 1;
+
+      if (slot.status === "occupied" || slot.status === "booked") {
+        grouped[key].occupied += 1;
+      }
+    });
+
+    const result = Object.values(grouped).map((item) => {
+      const percentage = Math.round((item.occupied / item.total) * 100);
+
+      let color = "red";
+
+      if (percentage >= 80) {
+        color = "green";
+      } else if (percentage >= 60) {
+        color = "blue";
+      } else if (percentage >= 40) {
+        color = "yellow";
+      } else {
+        color = "red";
+      }
+
+      return {
+        floor: item.floor,
+        sector: item.sector,
+        occupied: percentage,
+        total: 100,
+        color,
+      };
+    });
+
+    res.json(result);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Error fetching floor utilization",
+    });
+  }
+};
