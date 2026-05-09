@@ -181,23 +181,73 @@ exports.bookSlot = async (req, res) => {
 };
 
 // UPDATE SLOT STATUS (Admin manual update)
-exports.updateSlotStatus = async (req, res) => {
-  try {
-    const { status } = req.body;
+exports.updateSlotStatus = async (slot, status) => {
+  if (status === "occupied") {
+    const activeBooking = await Booking.findOne({
+      slot: slot._id,
+      status: "active",
+    });
 
-    const slot = await Slot.findByIdAndUpdate(
-      req.params.id,
-      { status },
+    if (!activeBooking) {
+      slot.status = "alert";
+
+      await slot.save();
+
+      return {
+        message: "Unauthorized parking detected",
+        slot,
+      };
+    }
+  }
+
+  // Ignore sensor/manual update if reserved
+  if (slot.status === "booked" && status !== "occupied") {
+    return {
+      message: "Slot reserved. Ignoring update.",
+      slot,
+    };
+  }
+
+  // Clear alert
+  if (slot.status === "alert" && status === "free") {
+    slot.status = "free";
+
+    await slot.save();
+
+    return {
+      message: "Alert cleared. Slot is now free.",
+      slot,
+    };
+  }
+
+  // Normal update
+  slot.status = status;
+
+  if (status === "free") {
+    slot.currentVehicle = null;
+  }
+
+  await slot.save();
+
+  // Complete booking when vehicle exits
+  if (status === "free") {
+    await Booking.findOneAndUpdate(
+      {
+        slot: slot._id,
+        status: "active",
+      },
+      {
+        status: "completed",
+        exitTime: new Date(),
+      },
       { new: true },
     );
-
-    res.json({
-      message: "Slot updated",
-      slot,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
   }
+
+  return {
+    message: "Slot updated successfully",
+    slot,
+  };
 };
 
 // SENSOR UPDATE SLOT (Hardware API)

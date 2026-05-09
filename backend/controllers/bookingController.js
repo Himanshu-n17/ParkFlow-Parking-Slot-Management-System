@@ -6,9 +6,20 @@ const AdminStats = require("../models/AdminStats");
 // VEHICLE ENTRY (Manual or Camera)
 exports.vehicleEntry = async (req, res) => {
   try {
-    const { slotId, vehicleNumber, userId, bookingType } = req.body;
+    const { vehicleNumber } = req.body;
 
-    const slot = await Slot.findById(slotId);
+    const booking = await Booking.findOne({
+      vehicleNumber,
+      status: "active",
+    }).populate("slot");
+
+    if (!booking) {
+      return res.status(404).json({
+        message: "No active booking found for this vehicle",
+      });
+    }
+
+    const slot = await Slot.findById(booking.slot._id);
 
     if (!slot) {
       return res.status(404).json({
@@ -16,41 +27,25 @@ exports.vehicleEntry = async (req, res) => {
       });
     }
 
-    if (slot.status !== "free") {
+    if (slot.status !== "booked") {
       return res.status(400).json({
-        message: "Slot not available",
+        message: "Slot is not reserved for entry",
       });
     }
-
-    const activeBooking = await Booking.findOne({
-      vehicleNumber,
-      status: "active",
-    });
-
-    if (activeBooking) {
-      return res.status(400).json({
-        message: "Vehicle already parked",
-      });
-    }
-
-    const booking = await Booking.create({
-      user: userId,
-      slot: slotId,
-      vehicleNumber,
-      bookingType,
-    });
 
     slot.status = "occupied";
     slot.currentVehicle = vehicleNumber;
-
     await slot.save();
 
     res.json({
-      message: "Vehicle entry recorded",
+      message: "Vehicle entered successfully",
+      slot,
       booking,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
@@ -71,34 +66,27 @@ exports.vehicleExit = async (req, res) => {
     }
 
     booking.exitTime = new Date();
-
-    const duration = (booking.exitTime - booking.entryTime) / (1000 * 60 * 60);
-
-    booking.duration = duration;
-
-    const ratePerHour = 20;
-
-    booking.cost = Math.ceil(duration * ratePerHour);
-
     booking.status = "completed";
-
-    booking.paymentStatus = "paid";
 
     await booking.save();
 
     const slot = await Slot.findById(booking.slot);
 
-    slot.status = "free";
-    slot.currentVehicle = null;
+    if (slot) {
+      slot.status = "free";
+      slot.currentVehicle = null;
 
-    await slot.save();
+      await slot.save();
+    }
 
     res.json({
       message: "Vehicle exit recorded",
       booking,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
