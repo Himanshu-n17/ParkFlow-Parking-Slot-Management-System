@@ -22,7 +22,6 @@ const Reports = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/immutability
     fetchData();
   }, []);
 

@@ -22,7 +22,6 @@ const SlotMonitor = () => {
   const [selectedSlot, setSelectedSlot] = useState("");
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/immutability
     fetchSlots();
   }, []);
 
