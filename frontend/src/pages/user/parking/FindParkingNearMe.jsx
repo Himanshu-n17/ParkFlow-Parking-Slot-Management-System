@@ -6,6 +6,7 @@ import "leaflet-routing-machine";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
 import DashboardLayout from "../../../components/layout/DashboardLayout";
+import { UserLoading } from "../../../components/common/Loader";
 
 const userLocationIcon = L.divIcon({
   className: "",
@@ -62,6 +63,7 @@ const Routing = ({ selectedParking, location }) => {
     }).addTo(map);
 
     return () => map.removeControl(routing);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedParking, location]);
 
   return null;
@@ -76,6 +78,8 @@ const FindParkingNearMe = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredResults, setFilteredResults] = useState([]);
+
+  const [loading, setLoading] = useState(true);
 
   const parkingLocations = [
     {
@@ -98,6 +102,7 @@ const FindParkingNearMe = () => {
   useEffect(() => {
     if (!navigator.geolocation) {
       setError("Geolocation not supported");
+      setLoading(false);
       return;
     }
 
@@ -110,7 +115,6 @@ const FindParkingNearMe = () => {
 
         setLocation(userLoc);
 
-        // auto detect nearest parking
         let nearest = null;
         let minDistance = Infinity;
 
@@ -130,9 +134,11 @@ const FindParkingNearMe = () => {
 
         setNearestParking(nearest);
         setNearestDistance(minDistance.toFixed(2));
+        setLoading(false);
       },
       () => {
         setError("Unable to retrieve location");
+        setLoading(false);
       },
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -226,6 +232,10 @@ const FindParkingNearMe = () => {
   const handleRoute = (parking) => {
     setSelectedParking(parking);
   };
+
+  if (loading) {
+    return <UserLoading />;
+  }
 
   if (error) return <p>{error}</p>;
   if (!location) return <p>Fetching your location...</p>;

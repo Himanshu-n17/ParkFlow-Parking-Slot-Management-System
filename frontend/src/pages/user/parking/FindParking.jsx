@@ -8,6 +8,7 @@ import {
   getAllSlots,
   getCurrentBooking,
 } from "../../../services/parkingService";
+import { UserLoading } from "../../../components/common/Loader";
 
 const FindParking = () => {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ const FindParking = () => {
 
   const [slots, setSlots] = useState([]);
   const [currentBooking, setCurrentBooking] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchSlots();
@@ -24,6 +26,7 @@ const FindParking = () => {
 
   const fetchSlots = async () => {
     try {
+      setLoading(true);
       const slotsData = await getAllSlots();
       const booking = await getCurrentBooking(user._id);
 
@@ -31,6 +34,8 @@ const FindParking = () => {
       setCurrentBooking(booking);
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -64,11 +69,12 @@ const FindParking = () => {
   };
 
   const freeCount = slots.filter((s) => s.status === "free").length;
-
   const occupiedCount = slots.filter((s) => s.status === "occupied").length;
-
   const bookedCount = slots.filter((s) => s.status === "booked").length;
 
+  if (loading) {
+    return <UserLoading />;
+  }
   return (
     <DashboardLayout>
       <div className="find-parking-container">
