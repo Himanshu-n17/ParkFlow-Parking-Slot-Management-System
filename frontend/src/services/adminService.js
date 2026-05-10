@@ -57,13 +57,6 @@ export const getAllTransactions = async () => {
   return res.data;
 };
 
-export const downloadRevenueReport = async () => {
-  const response = await API.get("/admin/reports/revenue", {
-    responseType: "blob",
-  });
-  return response.data;
-};
-
 export const updateUser = async (id, payload) => {
   const response = await API.put(`/admin/users/${id}`, payload);
   return response.data;
@@ -77,4 +70,38 @@ export const toggleBlockUser = async (id) => {
 export const getFloorUtilization = async () => {
   const res = await API.get("/admin/floor-utilization");
   return res.data;
+};
+
+export const downloadTransactionReport = async () => {
+  const response = await API.get("/admin/reports/revenue", {
+    responseType: "blob",
+  });
+
+  const url = window.URL.createObjectURL(new Blob([response.data]));
+  const link = document.createElement("a");
+  link.href = url;
+
+  link.setAttribute(
+    "download",
+    `transaction_report_${new Date().toLocaleDateString("en-GB").replaceAll("/", "-")}.csv`,
+  );
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+};
+
+export const downloadBookingReport = async () => {
+  const response = await API.get("/admin/reports/bookings", {
+    responseType: "blob",
+  });
+  const url = window.URL.createObjectURL(new Blob([response.data]));
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute(
+    "download",
+    `booking_report_${new Date().toLocaleDateString("en-GB").replaceAll("/", "-")}.csv`,
+  );
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
 };

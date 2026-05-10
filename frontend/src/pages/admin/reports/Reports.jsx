@@ -9,6 +9,8 @@ import {
   getWeeklyRevenue,
   getUtilization,
   getFloorUtilization,
+  downloadTransactionReport,
+  downloadBookingReport,
 } from "../../../services/adminService";
 
 const Reports = () => {
@@ -46,6 +48,22 @@ const Reports = () => {
       <div className="admin-reports-page">
         <div className="admin-reports-header">
           <p>Admin: System Analytics • {new Date().toLocaleDateString()}</p>
+
+          <div className="admin-report-actions">
+            <button
+              className="admin-report-download-btn transaction"
+              onClick={downloadTransactionReport}
+            >
+              ⬇ Transaction Report
+            </button>
+
+            <button
+              className="admin-report-download-btn booking"
+              onClick={downloadBookingReport}
+            >
+              ⬇ Booking Report
+            </button>
+          </div>
         </div>
 
         <div className="admin-report-cards-grid">

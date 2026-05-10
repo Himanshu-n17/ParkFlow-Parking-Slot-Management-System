@@ -1019,6 +1019,68 @@
   color: #64748b;
   font-size: 14px;
 }
+.admin-reports-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.admin-reports-header p {
+  color: #64748b;
+  font-size: 14px;
+}
+.admin-report-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.admin-report-download-btn {
+  border: none;
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  color: white;
+}
+
+.admin-report-download-btn.transaction {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.admin-report-download-btn.booking {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
+.admin-report-download-btn:hover {
+  transform: translateY(-2px);
+
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+
+  opacity: 0.95;
+}
+
+@media (max-width: 700px) {
+  .admin-reports-header {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 14px;
+  }
+
+  .admin-report-actions {
+    width: 100%;
+
+    flex-direction: column;
+  }
+
+  .admin-report-download-btn {
+    width: 100%;
+  }
+}
 
 .admin-report-cards-grid {
   display: grid;
