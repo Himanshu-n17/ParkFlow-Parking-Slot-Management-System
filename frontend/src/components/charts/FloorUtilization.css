@@ -1,86 +1,57 @@
 .floor-util-card {
   background: #071224;
-
-  border-radius: 24px;
-
-  padding: 26px;
-
+  border-radius: 22px;
+  padding: 20px;
   border: 1px solid rgba(99, 102, 241, 0.12);
-
   height: 100%;
-
-  min-height: 430px;
-
+  min-height: 330px;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.02),
     0 10px 30px rgba(0, 0, 0, 0.25);
 }
 
-/* HEADER */
-
 .floor-util-header {
   display: flex;
-
   justify-content: space-between;
-
   align-items: center;
-
-  margin-bottom: 30px;
+  margin-bottom: 18px;
 }
 
 .floor-util-header h3 {
   color: white;
-
   font-size: 18px;
-
   font-weight: 700;
 }
 
 .floor-util-header span {
-  color: #a855f7;
-
-  font-size: 15px;
-
+  color: #8b5cf6;
+  font-size: 14px;
   font-weight: 500;
 }
 
-/* LIST */
-
 .floor-util-list {
   display: flex;
-
   flex-direction: column;
-
-  gap: 30px;
+  gap: 18px;
 }
-
-/* ROW */
 
 .floor-util-row {
   display: flex;
-
   justify-content: space-between;
-
   align-items: center;
-
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .floor-util-row h4 {
   color: #f1f5f9;
-
-  font-size: 16px;
-
+  font-size: 15px;
   font-weight: 500;
 }
 
 .floor-util-row p {
-  font-size: 18px;
-
+  font-size: 15px;
   font-weight: 700;
 }
-
-/* NUMBER COLORS */
 
 .util-total {
   color: #64748b;
@@ -102,26 +73,19 @@
   color: #ef4444;
 }
 
-/* PROGRESS */
-
 .floor-progress {
   width: 100%;
-
-  height: 9px;
-
+  height: 6px;
   background: rgba(255, 255, 255, 0.05);
-
   border-radius: 999px;
-
   overflow: hidden;
 }
 
 .floor-progress-fill {
   height: 100%;
-
   border-radius: 999px;
-
-  transition: all 0.4s ease;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  transition: width 0.4s ease;
 }
 
 .floor-progress-fill.green {
