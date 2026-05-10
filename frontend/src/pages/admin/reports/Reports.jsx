@@ -12,12 +12,14 @@ import {
   downloadTransactionReport,
   downloadBookingReport,
 } from "../../../services/adminService";
+import { AdminLoading } from "../../../components/common/Loader";
 
 const Reports = () => {
   const [stats, setStats] = useState(null);
   const [weeklyData, setWeeklyData] = useState([]);
   const [utilData, setUtilData] = useState(null);
   const [floorData, setFloorData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/immutability
@@ -26,6 +28,8 @@ const Reports = () => {
 
   const fetchData = async () => {
     try {
+      setLoading(true);
+
       const [statsData, revenueData, utilizationData] = await Promise.all([
         getAdminStats(),
         getWeeklyRevenue(),
@@ -34,14 +38,18 @@ const Reports = () => {
       const floor = await getFloorUtilization();
 
       setFloorData(floor);
-
       setStats(statsData);
       setWeeklyData(revenueData);
       setUtilData(utilizationData);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
+  if (loading) {
+    return <AdminLoading />;
+  }
 
   return (
     <DashboardLayout>

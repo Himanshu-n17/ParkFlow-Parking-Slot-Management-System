@@ -4,9 +4,11 @@ import {
   getAllTransactions,
   downloadTransactionReport,
 } from "../../../services/adminService";
+import { AdminLoading } from "../../../components/common/Loader";
 
 const Transactions = () => {
   const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/immutability
@@ -15,12 +17,19 @@ const Transactions = () => {
 
   const fetchTransactions = async () => {
     try {
+      setLoading(true);
       const data = await getAllTransactions();
       setTransactions(data);
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return <AdminLoading />;
+  }
 
   const totalRevenue = transactions.reduce((acc, item) => acc + item.amount, 0);
   const active = transactions.filter((t) => t.status === "active").length;
