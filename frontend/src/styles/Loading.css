@@ -1,0 +1,125 @@
+/* ================= Admin loading =========================== */
+.admin-loading-screen {
+  width: 100vw;
+  height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(99, 102, 241, 0.12), transparent 40%),
+    #020817;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.admin-loading-card {
+  width: 420px;
+  background: rgba(11, 18, 32, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 28px;
+  padding: 42px;
+  text-align: center;
+  backdrop-filter: blur(18px);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.admin-loading-logo {
+  width: 78px;
+  height: 78px;
+  margin: auto;
+  margin-bottom: 22px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  font-weight: 700;
+  color: white;
+  box-shadow: 0 10px 40px rgba(99, 102, 241, 0.35);
+  animation: adminLogoFloat 3s ease-in-out infinite;
+}
+
+.admin-loading-card h1 {
+  color: white;
+  font-size: 34px;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.admin-loading-card p {
+  color: #94a3b8;
+  font-size: 15px;
+  margin-bottom: 32px;
+}
+
+.admin-loading-bar {
+  width: 100%;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.admin-loading-progress {
+  height: 100%;
+  width: 40%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #10b981, #6366f1);
+  animation: loadingMove 1.5s infinite ease-in-out;
+}
+
+.admin-loading-status {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+.pulse-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #10b981;
+  animation: pulse 1.2s infinite;
+}
+
+@keyframes loadingMove {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes adminLogoFloat {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}

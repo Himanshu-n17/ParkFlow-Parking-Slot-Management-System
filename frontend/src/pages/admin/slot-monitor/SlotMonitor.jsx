@@ -6,20 +6,19 @@ import {
   createSlot,
   deleteSlot,
 } from "../../../services/adminService";
+import { AdminLoading } from "../../../components/common/Loader";
 
 const SlotMonitor = () => {
   const [slots, setSlots] = useState([]);
-
+  const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
-
   const [newSlot, setNewSlot] = useState({
     slotNumber: "",
     floor: "",
     sector: "",
     sensorId: "",
   });
-
   const [selectedSlot, setSelectedSlot] = useState("");
 
   useEffect(() => {
@@ -29,14 +28,16 @@ const SlotMonitor = () => {
 
   const fetchSlots = async () => {
     try {
+      setLoading(true);
       const data = await getAllSlots();
       setSlots(data);
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // ✅ CREATE SLOT
   const handleCreate = async () => {
     try {
       await createSlot(newSlot);
@@ -53,7 +54,6 @@ const SlotMonitor = () => {
     }
   };
 
-  // ❌ DELETE SLOT
   const handleDelete = async () => {
     if (!selectedSlot) return;
 
@@ -70,10 +70,12 @@ const SlotMonitor = () => {
     }
   };
 
+  if (loading) {
+    return <AdminLoading />;
+  }
   return (
     <DashboardLayout>
       <div className="admin-slot-monitor-container">
-        {/* 🔥 ACTION BAR */}
         <div className="admin-slot-actions">
           <button
             className="admin-btn primary"
@@ -92,7 +94,6 @@ const SlotMonitor = () => {
 
         <SlotGrid slots={slots} refresh={fetchSlots} />
 
-        {/* 🟢 CREATE MODAL */}
         {showCreate && (
           <div className="admin-modal">
             <div className="admin-modal-content">
@@ -145,7 +146,6 @@ const SlotMonitor = () => {
           </div>
         )}
 
-        {/* 🔴 DELETE MODAL */}
         {showDelete && (
           <div className="admin-modal">
             <div className="admin-modal-content">

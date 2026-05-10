@@ -11,6 +11,7 @@ import {
   getUtilization,
   getWeeklyRevenue,
 } from "../../../services/adminService";
+import { AdminLoading } from "../../../components/common/Loader";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
@@ -20,55 +21,33 @@ const AdminDashboard = () => {
   const [utilData, setUtilData] = useState(null);
 
   useEffect(() => {
-    fetchStats();
-    fetchRevenue();
-    fetchPeakHours();
-    fetchUtilization();
+    const loadDashboard = async () => {
+      try {
+        setLoading(true);
+
+        const [statsData, revenueData, peakData, utilData] = await Promise.all([
+          getAdminStats(),
+          getWeeklyRevenue(),
+          getPeakHours(),
+          getUtilization(),
+        ]);
+
+        setStats(statsData);
+        setWeeklyData(revenueData);
+        setPeakData(peakData);
+        setUtilData(utilData);
+      } catch (error) {
+        console.error("Dashboard Load Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDashboard();
   }, []);
 
-  const fetchStats = async () => {
-    try {
-      const data = await getAdminStats();
-      setStats(data);
-    } catch (error) {
-      console.error("Error fetching admin stats:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-  const fetchRevenue = async () => {
-    try {
-      const data = await getWeeklyRevenue();
-      setWeeklyData(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-  const fetchPeakHours = async () => {
-    try {
-      const data = await getPeakHours();
-      setPeakData(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-  const fetchUtilization = async () => {
-    try {
-      const data = await getUtilization();
-      setUtilData(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   if (loading) {
-    return (
-      <DashboardLayout>
-        <div style={{ color: "white", padding: "20px" }}>
-          Loading dashboard...
-        </div>
-      </DashboardLayout>
-    );
+    return <AdminLoading />;
   }
 
   return (

@@ -5,12 +5,14 @@ import {
   EditUserModal,
 } from "../../../components/common/AdminModal";
 import { getAllUsers, toggleBlockUser } from "../../../services/adminService";
+import { AdminLoading } from "../../../components/common/Loader";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/immutability
@@ -19,11 +21,13 @@ const Users = () => {
 
   const fetchUsers = async () => {
     try {
+      setLoading(true);
       const data = await getAllUsers();
-
       setUsers(data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -44,6 +48,9 @@ const Users = () => {
       console.error(error);
     }
   };
+  if (loading) {
+    return <AdminLoading />;
+  }
 
   return (
     <DashboardLayout>
