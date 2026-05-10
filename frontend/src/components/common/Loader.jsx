@@ -28,3 +28,26 @@ export const AdminLoading = () => {
     </div>
   );
 };
+
+export const UserLoading = () => {
+  return (
+    <div className="user-loading-screen">
+      <div className="user-loading-wrapper">
+        <div className="user-loading-logo">🚗</div>
+
+        <h1>ParkFlow</h1>
+
+        <p>Finding the best parking experience for you...</p>
+
+        <div className="user-loading-track">
+          <div className="user-loading-bar" />
+        </div>
+
+        <div className="user-loading-status">
+          <span className="user-loading-dot" />
+          Syncing live parking slots...
+        </div>
+      </div>
+    </div>
+  );
+};

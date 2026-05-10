@@ -10,6 +10,7 @@ import {
   getCurrentParking,
   getUserStats,
 } from "../../../services/userService";
+import { UserLoading } from "../../../components/common/Loader";
 
 const UserDashboard = () => {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ const UserDashboard = () => {
   const [slots, setSlots] = useState([]);
   const [history, setHistory] = useState([]);
   const [currentBooking, setCurrentBooking] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchDashboardData();
@@ -28,6 +30,7 @@ const UserDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
+      setLoading(true);
       const slotsData = await getAvailableSlots();
       const historyData = await getBookingHistory(user._id);
       const currentData = await getCurrentParking(user._id);
@@ -39,9 +42,14 @@ const UserDashboard = () => {
       setStats(statsData);
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
+  if (loading) {
+    return <UserLoading />;
+  }
   return (
     <DashboardLayout>
       <div className="user-dashboard">

@@ -9,6 +9,7 @@ import {
 } from "../../../services/userService";
 
 import toast from "react-hot-toast";
+import { UserLoading } from "../../../components/common/Loader";
 
 const BookingHistory = () => {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ const BookingHistory = () => {
 
   const [bookings, setBookings] = useState([]);
   const [activeBooking, setActiveBooking] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchBookings();
@@ -25,6 +27,7 @@ const BookingHistory = () => {
 
   const fetchBookings = async () => {
     try {
+      setLoading(true);
       const history = await getBookingHistory(user._id);
       const active = await getCurrentParking(user._id);
 
@@ -32,6 +35,8 @@ const BookingHistory = () => {
       setActiveBooking(active);
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -47,6 +52,9 @@ const BookingHistory = () => {
       toast.error("Cancel failed");
     }
   };
+  if (loading) {
+    return <UserLoading />;
+  }
 
   return (
     <DashboardLayout>

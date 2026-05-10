@@ -1,27 +1,34 @@
 import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../../components/layout/DashboardLayout";
 import { getUserStats } from "../../../services/userService";
+import { UserLoading } from "../../../components/common/Loader";
 
 const UserProfile = () => {
   const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/immutability
     fetchStats();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchStats = async () => {
     try {
+      setLoading(true);
       const data = await getUserStats(user._id);
       setStats(data);
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
+  if (loading) {
+    return <UserLoading />;
+  }
   if (!stats) return null;
 
   return (
