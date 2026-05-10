@@ -56,7 +56,7 @@ const Reports = () => {
 
             <h4>Most Used Slot</h4>
 
-            <p>{utilData?.topSlotBookings || 0} bookings today</p>
+            <p>{utilData?.topSlotBookings || 0} bookings till now</p>
           </div>
 
           <div className="admin-report-card">
