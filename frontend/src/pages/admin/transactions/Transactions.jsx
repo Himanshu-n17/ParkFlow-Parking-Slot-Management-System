@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../../components/layout/DashboardLayout";
 import {
   getAllTransactions,
-  downloadRevenueReport,
+  downloadTransactionReport,
 } from "../../../services/adminService";
 
 const Transactions = () => {
@@ -19,29 +19,6 @@ const Transactions = () => {
       setTransactions(data);
     } catch (err) {
       console.error(err);
-    }
-  };
-
-  const handleDownloadReport = async () => {
-    try {
-      const data = await downloadRevenueReport();
-
-      const url = window.URL.createObjectURL(new Blob([data]));
-
-      const link = document.createElement("a");
-
-      link.href = url;
-
-      link.setAttribute("download", "transaction_report.csv");
-
-      document.body.appendChild(link);
-
-      link.click();
-
-      link.remove();
-    } catch (error) {
-      console.error(error);
-      alert("Download failed");
     }
   };
 
@@ -76,7 +53,7 @@ const Transactions = () => {
               <p>Completed</p>
             </div>
           </div>
-          <button className="export-btn" onClick={handleDownloadReport}>
+          <button className="export-btn" onClick={downloadTransactionReport}>
             Export Transaction Report
           </button>
         </div>
