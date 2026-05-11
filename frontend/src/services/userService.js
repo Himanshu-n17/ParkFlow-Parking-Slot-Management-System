@@ -26,3 +26,15 @@ export const cancelBooking = async (bookingId) => {
   });
   return res.data;
 };
+
+export const updateProfile = async (data) => {
+  const token = localStorage.getItem("token");
+
+  const response = await API.put(`user/profile/update`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+};

@@ -1,6 +1,7 @@
 const Booking = require("../models/Booking");
 const Slot = require("../models/Slot");
 const User = require("../models/User");
+const bcrypt = require("bcryptjs");
 
 // CURRENT ACTIVE BOOKING
 exports.getCurrentParking = async (req, res) => {
@@ -76,8 +77,9 @@ exports.getUserStats = async (req, res) => {
       }
     });
 
-    const vehicleNumber = bookings.length > 0 ? bookings[0].vehicleNumber : "-";
-
+    const vehicleNumber =
+      user?.vehicleNumber ||
+      (bookings.length > 0 ? bookings[0].vehicleNumber : "-");
     res.json({
       totalBookings,
       completedBookings,
@@ -89,5 +91,42 @@ exports.getUserStats = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+exports.updateProfile = async (req, res) => {
+  try {
+    const { name, email, vehicleNumber, password } = req.body;
+
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    if (name) user.name = name;
+    if (email) user.email = email;
+    if (vehicleNumber) user.vehicleNumber = vehicleNumber;
+
+    if (password && password.trim() !== "") {
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      user.password = hashedPassword;
+    }
+
+    await user.save();
+
+    res.json({
+      message: "Profile updated successfully",
+      user,
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };

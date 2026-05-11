@@ -6,6 +6,7 @@ const {
   getBookingHistory,
   getAvailableSlots,
   getUserStats,
+  updateProfile,
 } = require("../controllers/userController");
 
 const { protect } = require("../middleware/authMiddleware");
@@ -21,5 +22,7 @@ router.get("/slots", protect, getAvailableSlots);
 
 // dashboard stats
 router.get("/stats/:userId", protect, getUserStats);
+
+router.put("/profile/update", protect, updateProfile);
 
 module.exports = router;
