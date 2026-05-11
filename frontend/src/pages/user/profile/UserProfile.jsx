@@ -1,13 +1,23 @@
 import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../../components/layout/DashboardLayout";
-import { getUserStats } from "../../../services/userService";
+import { getUserStats, updateProfile } from "../../../services/userService";
 import { UserLoading } from "../../../components/common/Loader";
+import { FiEdit2, FiEye, FiEyeOff } from "react-icons/fi";
 
 const UserProfile = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
 
   const user = JSON.parse(localStorage.getItem("user"));
+
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [formData, setFormData] = useState({
+    name: user.name || "",
+    email: user.email || "",
+    vehicleNumber: user.vehicleNumber || "",
+    password: "",
+  });
 
   useEffect(() => {
     fetchStats();
@@ -25,6 +35,28 @@ const UserProfile = () => {
       setLoading(false);
     }
   };
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+  const handleUpdateProfile = async () => {
+    try {
+      await updateProfile(formData);
+      const updatedUser = {
+        ...user,
+        ...formData,
+      };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      alert("Profile updated");
+      setShowEditModal(false);
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
+      alert("Update failed");
+    }
+  };
 
   if (loading) {
     return <UserLoading />;
@@ -36,6 +68,12 @@ const UserProfile = () => {
       <div className="user-profile-container">
         {/* LEFT PROFILE CARD */}
         <div className="user-profile-card">
+          <button
+            className="user-profile-edit-btn"
+            onClick={() => setShowEditModal(true)}
+          >
+            <FiEdit2 />
+          </button>
           <div className="user-profile-avatar">{user.name.charAt(0)}</div>
 
           <h2 className="user-profile-name">{user.name}</h2>
@@ -110,6 +148,94 @@ const UserProfile = () => {
           </div>
         </div>
       </div>
+      {showEditModal && (
+        <div className="user-profile-modal-overlay">
+          <div className="user-profile-modal">
+            <div className="user-profile-modal-top">
+              <div className="user-profile-modal-icon">✏️</div>
+
+              <div>
+                <h2>Edit Profile</h2>
+                <p>Update your account information</p>
+              </div>
+            </div>
+
+            <div className="user-profile-input-group">
+              <label>Full Name</label>
+
+              <input
+                type="text"
+                name="name"
+                placeholder="Enter your name"
+                value={formData.name}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="user-profile-input-group">
+              <label>Email Address</label>
+
+              <input
+                type="email"
+                name="email"
+                placeholder="Enter your email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="user-profile-input-group">
+              <label>Vehicle Number</label>
+
+              <input
+                type="text"
+                name="vehicleNumber"
+                placeholder="MP09AB1234"
+                value={formData.vehicleNumber}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="user-profile-input-group">
+              <label>New Password</label>
+
+              <div className="user-password-wrapper">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={handleChange}
+                />
+
+                <button
+                  type="button"
+                  className="user-password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <FiEyeOff /> : <FiEye />}
+                </button>
+              </div>
+            </div>
+
+            <div className="user-profile-modal-actions">
+              <button
+                className="user-profile-cancel-btn"
+                onClick={() => setShowEditModal(false)}
+              >
+                Cancel
+              </button>
+
+              <button
+                className="user-profile-save-btn"
+                onClick={handleUpdateProfile}
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 };
