@@ -1046,3 +1046,200 @@
 .red-marker {
   filter: hue-rotate(140deg);
 }
+
+/* =====================================  Add Money ======================================== */
+
+.user-add-money-page {
+  padding: 10px;
+}
+
+.user-add-money-header {
+  margin-bottom: 26px;
+}
+
+.user-add-money-header p {
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.user-add-money-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 0.9fr;
+  gap: 24px;
+}
+
+.user-add-money-card,
+.user-upi-payment-card {
+  background: white;
+  border-radius: 28px;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+.user-add-money-top,
+.user-upi-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.user-add-money-icon,
+.user-upi-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  background: rgba(79, 70, 229, 0.12);
+  color: #4f46e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.user-add-money-top h2,
+.user-upi-header h2 {
+  font-size: 26px;
+  color: #0f172a;
+}
+
+.user-add-money-top p,
+.user-upi-header p {
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.user-add-money-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.user-add-money-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.user-add-money-group label {
+  color: #334155;
+  font-weight: 600;
+}
+
+.user-add-money-group input {
+  height: 56px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  padding: 0 16px;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.25s ease;
+}
+
+.user-add-money-group input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.08);
+}
+
+.user-add-money-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.user-add-money-btn {
+  height: 56px;
+  border: none;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  margin-top: 8px;
+}
+
+.user-add-money-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(79, 70, 229, 0.25);
+}
+
+.user-add-money-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.user-upi-payment-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.user-upi-qr-box {
+  width: 240px;
+  height: 240px;
+  background: #f8fafc;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 12px 0 20px;
+}
+
+.user-upi-qr-box img {
+  width: 200px;
+  height: 200px;
+}
+
+.user-upi-user-details {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.user-upi-user-details h3 {
+  color: #0f172a;
+  font-size: 22px;
+}
+
+.user-upi-user-details p {
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.user-upi-apps {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 26px;
+}
+
+.user-upi-app {
+  background: #f8fafc;
+  border-radius: 16px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.upi-btn {
+  width: 100%;
+}
+
+@media (max-width: 1000px) {
+  .user-add-money-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .user-add-money-card,
+  .user-upi-payment-card {
+    padding: 20px;
+  }
+  .user-add-money-row {
+    grid-template-columns: 1fr;
+  }
+}

@@ -6,6 +6,8 @@ import {
   Navigate,
   Outlet,
 } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
@@ -29,6 +31,7 @@ import Landing from "./pages/Landing";
 import PrivateRoute from "./routes/PrivateRoute";
 import { Toaster } from "react-hot-toast";
 import UserProvider, { UserContext } from "./context/userContext";
+import AddMoney from "./pages/user/profile/AddMoney";
 
 const App = () => {
   return (
@@ -54,9 +57,13 @@ const App = () => {
             <Route path="/user/dashboard" element={<UserDashboard />} />
             <Route path="/user/find-parking" element={<FindParking />} />
             <Route path="/user/book-parking/:slotId" element={<BookSlot />} />
-            <Route path="/user/find-parking-near-me" element={<FindParkingNearMe />} />
+            <Route
+              path="/user/find-parking-near-me"
+              element={<FindParkingNearMe />}
+            />
             <Route path="/user/bookings" element={<BookingHistory />} />
             <Route path="/user/profile" element={<UserProfile />} />
+            <Route path="/user/add-money" element={<AddMoney />} />
           </Route>
 
           {/* ROOT */}
@@ -70,6 +77,7 @@ const App = () => {
           style: { fontSize: "13px" },
         }}
       />
+      <ToastContainer position="top-right" autoClose={3000} theme="dark" />
     </UserProvider>
   );
 };

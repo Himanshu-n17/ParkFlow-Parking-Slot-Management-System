@@ -44,6 +44,7 @@ const Navbar = () => {
     if (path.includes("/user/find-parking")) return "Find Parking";
     if (path.includes("/user/bookings")) return "My Bookings";
     if (path.includes("/user/profile")) return "My Profile";
+    if (path.includes("/user/add-money")) return "Add Money";
   };
 
   return (

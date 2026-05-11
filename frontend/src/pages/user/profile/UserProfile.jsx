@@ -3,8 +3,10 @@ import DashboardLayout from "../../../components/layout/DashboardLayout";
 import { getUserStats, updateProfile } from "../../../services/userService";
 import { UserLoading } from "../../../components/common/Loader";
 import { FiEdit2, FiEye, FiEyeOff } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 
 const UserProfile = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
@@ -114,7 +116,12 @@ const UserProfile = () => {
 
             <p>Available balance</p>
 
-            <button className="user-profile-add-money">+ Add Money</button>
+            <button
+              className="user-profile-add-money"
+              onClick={() => navigate("/user/add-money")}
+            >
+              + Add Money
+            </button>
           </div>
 
           {/* STATISTICS CARD */}
