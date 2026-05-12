@@ -130,3 +130,51 @@ exports.updateProfile = async (req, res) => {
     });
   }
 };
+
+exports.getWalletTransactions = async (req, res) => {
+  try {
+    const bookings = await Booking.find({
+      user: req.params.userId,
+    }).sort({ createdAt: -1 });
+
+    const transactions = [];
+
+    bookings.forEach((b) => {
+      if (b.status === "completed") {
+        transactions.push({
+          type: "Parking Payment",
+          amount: b.cost,
+          status: "debit",
+          date: b.updatedAt,
+          vehicleNumber: b.vehicleNumber,
+        });
+      }
+
+      if (b.status === "cancelled") {
+        transactions.push({
+          type: "Booking Refund",
+          amount: b.cost || 0,
+          status: "credit",
+          date: b.updatedAt,
+          vehicleNumber: b.vehicleNumber,
+        });
+
+        transactions.push({
+          type: "Cancellation Charge",
+          amount: 10,
+          status: "debit",
+          date: b.updatedAt,
+          vehicleNumber: b.vehicleNumber,
+        });
+      }
+    });
+
+    res.json(transactions);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};

@@ -38,3 +38,15 @@ export const updateProfile = async (data) => {
 
   return response.data;
 };
+
+export const getWalletTransactions = async (userId) => {
+  const token = localStorage.getItem("token");
+
+  const response = await API.get(`/user/wallet-transactions/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+};
