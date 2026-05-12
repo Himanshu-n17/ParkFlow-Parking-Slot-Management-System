@@ -111,17 +111,23 @@ const UserProfile = () => {
         <div className="user-profile-right">
           <div className="user-profile-wallet">
             <h3>Wallet Balance</h3>
-
             <h1>₹{stats.wallet || 0}</h1>
-
             <p>Available balance</p>
-
-            <button
-              className="user-profile-add-money"
-              onClick={() => navigate("/user/add-money")}
-            >
-              + Add Money
-            </button>
+            <div className="wallet-btn-group">
+              <button
+                className="user-profile-add-money"
+                onClick={() => navigate("/user/add-money")}
+              >
+                + Add Money
+              </button>
+              <button
+                className="wallet-history-btn"
+                onClick={() => navigate("/user/wallet-transactions")}
+              >
+                <span>Transactions</span>
+                <div className="wallet-history-arrow">↗</div>
+              </button>
+            </div>
           </div>
 
           {/* STATISTICS CARD */}

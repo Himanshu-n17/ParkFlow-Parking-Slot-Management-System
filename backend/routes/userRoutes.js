@@ -7,6 +7,7 @@ const {
   getAvailableSlots,
   getUserStats,
   updateProfile,
+  getWalletTransactions,
 } = require("../controllers/userController");
 
 const { protect } = require("../middleware/authMiddleware");
@@ -24,5 +25,7 @@ router.get("/slots", protect, getAvailableSlots);
 router.get("/stats/:userId", protect, getUserStats);
 
 router.put("/profile/update", protect, updateProfile);
+
+router.get("/wallet-transactions/:userId", protect, getWalletTransactions);
 
 module.exports = router;

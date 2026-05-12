@@ -43,10 +43,6 @@ const AddMoney = () => {
   return (
     <DashboardLayout>
       <div className="user-add-money-page">
-        <div className="user-add-money-header">
-          <p>Securely top up your ParkFlow wallet</p>
-        </div>
-
         <div className="user-add-money-grid">
           {/* LEFT */}
 

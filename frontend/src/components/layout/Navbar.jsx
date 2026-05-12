@@ -45,13 +45,49 @@ const Navbar = () => {
     if (path.includes("/user/bookings")) return "My Bookings";
     if (path.includes("/user/profile")) return "My Profile";
     if (path.includes("/user/add-money")) return "Add Money";
+    if (path.includes("/user/wallet-transactions"))
+      return "Wallet Transactions";
   };
 
+  const getPageDescription = () => {
+    const path = location.pathname;
+
+    // Admin Routes
+
+    if (path.includes("/admin/dashboard")) return `Welcome back, ${user.name}`;
+    if (path.includes("/admin/slot-monitor"))
+      return "Manage, monitor and control parking slot activity";
+    if (path.includes("/admin/transactions"))
+      return "Track all parking payments and booking transactions";
+    if (path.includes("/admin/anpr-monitor"))
+      return "Monitor AI vehicle recognition and ANPR activity";
+    if (path.includes("/admin/users"))
+      return "Manage registered users and account access";
+    if (path.includes("/admin/reports"))
+      return "View analytics, reports and parking insights";
+
+    // User Routes
+    if (path.includes("/user/dashboard")) return `Welcome back, ${user.name}`;
+    if (path.includes("/user/find-parking-near-me"))
+      return "Locate the nearest available smart parking zones";
+    if (path.includes("/user/find-parking"))
+      return "Browse and reserve available parking slots";
+    if (path.includes("/user/bookings"))
+      return "View your active and previous parking bookings";
+    if (path.includes("/user/profile"))
+      return "Manage your profile, wallet and parking details";
+    if (path.includes("/user/add-money"))
+      return "Securely recharge your ParkFlow wallet";
+    if (path.includes("/user/wallet-transactions"))
+      return "Track wallet payments, refunds and charges";
+
+    return "Welcome to ParkFlow";
+  };
   return (
     <div className="navbar">
       <div>
         <h2>{getPageTitle()}</h2>
-        <p>Welcome back, {user.name}</p>
+        <p>{getPageDescription()}</p>
       </div>
 
       <div className="navbar-right">

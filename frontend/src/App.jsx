@@ -32,6 +32,7 @@ import PrivateRoute from "./routes/PrivateRoute";
 import { Toaster } from "react-hot-toast";
 import UserProvider, { UserContext } from "./context/userContext";
 import AddMoney from "./pages/user/profile/AddMoney";
+import WalletTransactions from "./pages/user/profile/WalletTransactions";
 
 const App = () => {
   return (
@@ -64,6 +65,10 @@ const App = () => {
             <Route path="/user/bookings" element={<BookingHistory />} />
             <Route path="/user/profile" element={<UserProfile />} />
             <Route path="/user/add-money" element={<AddMoney />} />
+            <Route
+              path="/user/wallet-transactions"
+              element={<WalletTransactions />}
+            />
           </Route>
 
           {/* ROOT */}
