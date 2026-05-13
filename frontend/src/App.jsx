@@ -33,6 +33,7 @@ import { Toaster } from "react-hot-toast";
 import UserProvider, { UserContext } from "./context/userContext";
 import AddMoney from "./pages/user/profile/AddMoney";
 import WalletTransactions from "./pages/user/profile/WalletTransactions";
+import ForgotPassword from "./pages/auth/ForgotPassword";
 
 const App = () => {
   return (
@@ -42,6 +43,7 @@ const App = () => {
           {/* AUTH ROUTES */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
 
           {/* ADMIN ROUTES */}
           <Route element={<PrivateRoute allowedRoles={["admin"]} />}>

@@ -252,3 +252,24 @@
   border: 2px solid #4f6df5;
   background: #f2f5ff;
 }
+
+.forgot-password-row {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -4px;
+  margin-bottom: 14px;
+}
+
+.forgot-password-link {
+  color: #8b5cf6;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.forgot-password-link:hover {
+  color: #a78bfa;
+  text-decoration: underline;
+}
