@@ -2,6 +2,7 @@ const Booking = require("../models/Booking");
 const Slot = require("../models/Slot");
 const User = require("../models/User");
 const AdminStats = require("../models/AdminStats");
+const sendCancellationMail = require("../utils/sendCancellationMail");
 
 // VEHICLE ENTRY (Manual or Camera)
 exports.vehicleEntry = async (req, res) => {
@@ -174,11 +175,19 @@ exports.cancelBooking = async (req, res) => {
     await stats.save();
 
     booking.status = "cancelled";
+    booking.paymentStatus = "refunded";
     await booking.save();
 
     slot.status = "free";
     slot.currentVehicle = null;
     await slot.save();
+
+    await sendCancellationMail({
+      email: user.email,
+      username: user.name,
+      slotNumber: slot.slotNumber,
+      refundAmount,
+    });
 
     res.json({
       message: "Booking cancelled successfully",

@@ -2,6 +2,8 @@ const Slot = require("../models/Slot");
 const Booking = require("../models/Booking");
 const User = require("../models/User");
 const AdminStats = require("../models/AdminStats");
+const sendBookingConfirmation = require("../utils/sendBookingConfirmation");
+const sendDurationEndingMail = require("../utils/sendDurationEndingMail");
 
 // Parking pricing logic
 const calculateCost = (seconds) => {
@@ -136,7 +138,6 @@ exports.bookSlot = async (req, res) => {
       });
     }
 
-    // ✅ Deduct wallet balance
     user.wallet -= cost;
     await user.save();
 
@@ -156,6 +157,7 @@ exports.bookSlot = async (req, res) => {
       slot: slotId,
       vehicleNumber,
       bookingType: "manual",
+      status: "active",
       duration: durationInSeconds,
       entryTime,
       exitTime,
@@ -166,6 +168,34 @@ exports.bookSlot = async (req, res) => {
     slot.status = "booked";
 
     await slot.save();
+
+    await sendBookingConfirmation({
+      email: user.email,
+      username: user.name,
+      slotNumber: slot.slotNumber,
+      duration,
+      cost,
+    });
+
+    const warningTime = durationInSeconds - 5 * 60;
+
+    if (warningTime > 0) {
+      setTimeout(async () => {
+        try {
+          const latestBooking = await Booking.findById(booking._id);
+
+          if (latestBooking && latestBooking.status === "active") {
+            await sendDurationEndingMail({
+              email: user.email,
+              username: user.name,
+              slotNumber: slot.slotNumber,
+            });
+          }
+        } catch (error) {
+          console.error("Duration warning mail failed:", error);
+        }
+      }, warningTime * 1000);
+    }
 
     res.json({
       message: "Slot booked successfully",
