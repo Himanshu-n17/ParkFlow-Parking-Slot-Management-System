@@ -15,6 +15,7 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showForgot, setShowForgot] = useState(false);
 
   const validate = () => {
     let newErrors = {};
@@ -60,6 +61,7 @@ const Login = () => {
         navigate("/user/dashboard");
       }
     } catch (error) {
+      setShowForgot(true);
       toast.error(error.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
@@ -107,6 +109,14 @@ const Login = () => {
           </span>
         </div>
         {errors.password && <p className="error-text">{errors.password}</p>}
+
+        {showForgot && (
+          <div className="forgot-password-row">
+            <Link to="/forgot-password" className="forgot-password-link">
+              Forgot Password?
+            </Link>
+          </div>
+        )}
 
         <button className="auth-button">
           {loading ? "Signing in..." : "Sign In →"}
