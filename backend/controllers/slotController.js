@@ -307,6 +307,14 @@ exports.sensorUpdateSlot = async (req, res) => {
         await slot.save();
         global.io.emit("slotUpdated");
 
+        global.io.emit("unauthorizedParking", {
+          slotNumber: slot.slotNumber,
+          floor: slot.floor,
+          sector: slot.sector,
+          time: new Date(),
+        });
+
+        // console.log("🚨 Unauthorized Parking Detected");
         return res.json({
           message: "Unauthorized parking detected",
           slot,

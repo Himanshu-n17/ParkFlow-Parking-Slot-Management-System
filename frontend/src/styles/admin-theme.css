@@ -66,6 +66,112 @@
   color: #a5b4fc;
 }
 
+/* ============================================ ALERT  =========================================== */
+.unauthorized-alert-box {
+  position: fixed;
+
+  top: 90px;
+
+  right: 24px;
+
+  width: 340px;
+
+  background: #7f1d1d;
+
+  color: white;
+
+  border-radius: 22px;
+
+  padding: 22px;
+
+  z-index: 9999;
+
+  box-shadow: 0 12px 40px rgba(239, 68, 68, 0.4);
+
+  animation: alertPulse 1s infinite;
+}
+
+@keyframes alertPulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.02);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.unauthorized-alert-top {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-bottom: 18px;
+}
+
+.unauthorized-alert-top h2 {
+  font-size: 22px;
+
+  font-weight: 700;
+}
+
+.unauthorized-alert-top button {
+  border: none;
+
+  background: rgba(255, 255, 255, 0.12);
+
+  color: white;
+
+  width: 34px;
+
+  height: 34px;
+
+  border-radius: 12px;
+
+  cursor: pointer;
+
+  font-size: 18px;
+}
+
+.unauthorized-alert-body p {
+  margin-bottom: 10px;
+
+  color: rgba(255, 255, 255, 0.92);
+
+  line-height: 1.5;
+}
+
+.mute-alert-btn {
+  width: 100%;
+
+  margin-top: 16px;
+
+  height: 48px;
+
+  border: none;
+
+  border-radius: 14px;
+
+  background: rgba(255, 255, 255, 0.14);
+
+  color: white;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.25s ease;
+}
+
+.mute-alert-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
 /* ============================================   Dashboard   =========================================*/
 .admin-dashboard-grid {
   display: grid;
