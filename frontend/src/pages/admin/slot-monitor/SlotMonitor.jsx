@@ -7,6 +7,7 @@ import {
   deleteSlot,
 } from "../../../services/adminService";
 import { AdminLoading } from "../../../components/common/Loader";
+import socket from "../../../socket";
 
 const SlotMonitor = () => {
   const [slots, setSlots] = useState([]);
@@ -23,6 +24,16 @@ const SlotMonitor = () => {
 
   useEffect(() => {
     fetchSlots();
+
+    socket.on("slotUpdated", () => {
+      console.log("Real-time slot update received");
+
+      fetchSlots();
+    });
+
+    return () => {
+      socket.off("slotUpdated");
+    };
   }, []);
 
   const fetchSlots = async () => {
