@@ -3,6 +3,7 @@ import DashboardLayout from "../../../components/layout/DashboardLayout";
 import { UserCard, ParkingSlot } from "../../../components/common/Card";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import socket from "../../../socket";
 
 import {
   getAllSlots,
@@ -21,6 +22,16 @@ const FindParking = () => {
 
   useEffect(() => {
     fetchSlots();
+
+    socket.on("slotUpdated", () => {
+      console.log("Realtime parking update");
+
+      fetchSlots();
+    });
+
+    return () => {
+      socket.off("slotUpdated");
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
