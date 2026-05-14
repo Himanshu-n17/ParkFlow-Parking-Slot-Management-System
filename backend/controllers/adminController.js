@@ -27,12 +27,12 @@ exports.getDashboardStats = async (req, res) => {
     });
 
     const bookings = await Booking.find({
-      paymentStatus: "paid",
+      $or: [{ status: "completed" }, { status: "cancelled" }],
     });
 
     let totalRevenue = bookings.reduce((sum, booking) => {
       if (booking.status === "cancelled") {
-        return sum + 10; // cancellation fee retained
+        return sum + 10;
       }
 
       return sum + (booking.cost || 0);

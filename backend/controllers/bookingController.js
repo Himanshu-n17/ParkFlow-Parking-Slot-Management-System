@@ -37,6 +37,7 @@ exports.vehicleEntry = async (req, res) => {
     slot.status = "occupied";
     slot.currentVehicle = vehicleNumber;
     await slot.save();
+    global.io.emit("slotUpdated");
 
     res.json({
       message: "Vehicle entered successfully",
@@ -78,6 +79,7 @@ exports.vehicleExit = async (req, res) => {
       slot.currentVehicle = null;
 
       await slot.save();
+      global.io.emit("slotUpdated");
     }
 
     res.json({
@@ -181,6 +183,7 @@ exports.cancelBooking = async (req, res) => {
     slot.status = "free";
     slot.currentVehicle = null;
     await slot.save();
+    global.io.emit("slotUpdated");
 
     await sendCancellationMail({
       email: user.email,

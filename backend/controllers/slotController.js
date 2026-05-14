@@ -168,6 +168,7 @@ exports.bookSlot = async (req, res) => {
     slot.status = "booked";
 
     await slot.save();
+    global.io.emit("slotUpdated");
 
     await sendBookingConfirmation({
       email: user.email,
@@ -304,6 +305,7 @@ exports.sensorUpdateSlot = async (req, res) => {
         slot.status = "alert";
 
         await slot.save();
+        global.io.emit("slotUpdated");
 
         return res.json({
           message: "Unauthorized parking detected",
@@ -323,6 +325,7 @@ exports.sensorUpdateSlot = async (req, res) => {
       slot.status = "free";
 
       await slot.save();
+      global.io.emit("slotUpdated");
 
       return res.json({
         message: "Alert cleared. Slot is now free.",
@@ -338,6 +341,7 @@ exports.sensorUpdateSlot = async (req, res) => {
     }
 
     await slot.save();
+    global.io.emit("slotUpdated");
 
     // Complete booking when vehicle leaves
     if (status === "free") {
