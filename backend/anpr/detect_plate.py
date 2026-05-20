@@ -4,6 +4,9 @@ import sys
 
 import cv2
 import numpy as np
+import easyocr
+
+reader = easyocr.Reader(['en'])
 
 
 def decode_image(image_b64: str):
@@ -33,7 +36,7 @@ def locate_plate(img):
         gray,
         scaleFactor=1.1,
         minNeighbors=4,
-        minSize=(60, 20),
+        minSize=(120, 40)
     )
 
     if len(boxes) == 0:
@@ -66,6 +69,7 @@ def main():
             raise ValueError("Invalid image")
 
         crop, bbox = locate_plate(img)
+
         if crop is None:
             print(
                 json.dumps(
@@ -78,6 +82,47 @@ def main():
             )
             return
 
+        gray_crop = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
+        # Reduce noise
+        gray_crop = cv2.GaussianBlur(gray_crop, (3, 3), 0)
+        gray_crop = cv2.threshold(
+            gray_crop,
+            0,
+            255,
+            cv2.THRESH_BINARY + cv2.THRESH_OTSU
+            )[1]
+        
+        # Sharpen image
+        kernel = np.array([
+            [-1, -1, -1],
+            [-1,  9, -1],
+            [-1, -1, -1]
+        ])
+        gray_crop = cv2.filter2D(gray_crop, -1, kernel)
+        # Upscale image for better OCR
+        gray_crop = cv2.resize(
+            gray_crop,
+            None,
+            fx=3,
+            fy=3,
+            interpolation=cv2.INTER_CUBIC
+        )
+
+        ocr_result = reader.readtext(
+            gray_crop,
+            allowlist='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+        )        
+        plate_text = ""
+
+        if ocr_result:
+            plate_text = ocr_result[0][1]
+
+            # Clean OCR output
+            plate_text = "".join(
+                ch for ch in plate_text if ch.isalnum()
+            ).upper()
+        
+
         plate_img_b64 = encode_image(crop)
         print(
             json.dumps(
@@ -85,6 +130,7 @@ def main():
                     "found": bool(plate_img_b64),
                     "plateImage": plate_img_b64,
                     "bbox": bbox,
+                    "plateText": plate_text
                 }
             )
         )

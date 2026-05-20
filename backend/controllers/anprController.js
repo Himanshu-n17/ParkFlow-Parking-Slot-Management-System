@@ -60,7 +60,8 @@ const initWorker = async () => {
   return worker;
 };
 
-const normalizePlate = (value = "") => value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+const normalizePlate = (value = "") =>
+  value.toUpperCase().replace(/[^A-Z0-9]/g, "");
 
 const LETTER_LIKE_TO_DIGIT = {
   O: "0",
@@ -75,12 +76,12 @@ const LETTER_LIKE_TO_DIGIT = {
 };
 
 const DIGIT_LIKE_TO_LETTER = {
-  "0": "O",
-  "1": "I",
-  "2": "Z",
-  "5": "S",
-  "6": "G",
-  "8": "B",
+  0: "O",
+  1: "I",
+  2: "Z",
+  5: "S",
+  6: "G",
+  8: "B",
 };
 
 const toLetter = (ch = "") => DIGIT_LIKE_TO_LETTER[ch] || ch;
@@ -124,7 +125,8 @@ const normalizeIndianPlateShape = (plate = "") => {
 const extractMatches = (text = "") => {
   const normalizedText = text.toUpperCase().replace(/[^A-Z0-9\s-]/g, " ");
   const candidates = new Set();
-  const loosePattern = /[A-Z]{2}[\s-]?[0-9]{1,2}[\s-]?[A-Z]{1,3}[\s-]?[0-9]{3,4}/g;
+  const loosePattern =
+    /[A-Z]{2}[\s-]?[0-9]{1,2}[\s-]?[A-Z]{1,3}[\s-]?[0-9]{3,4}/g;
 
   for (const match of normalizedText.match(loosePattern) || []) {
     const compact = normalizeIndianPlateShape(match);
@@ -241,7 +243,11 @@ const detectFromImageBuffer = async (imageBuffer) => {
     for (const item of extracted) {
       const score = scorePlateCandidate(item);
       const existing = candidates.get(item);
-      if (!existing || existing.score < score || existing.confidence < runConfidence) {
+      if (
+        !existing ||
+        existing.score < score ||
+        existing.confidence < runConfidence
+      ) {
         candidates.set(item, { plate: item, score, confidence: runConfidence });
       }
     }
@@ -257,7 +263,10 @@ const detectFromImageBuffer = async (imageBuffer) => {
     plate: best?.plate || "",
     confidence: Number(best?.confidence || 0),
     plateScore: Number(best?.score || 0),
-    rawText: ocrRuns.map((run) => run?.data?.text || "").join("\n---\n").trim(),
+    rawText: ocrRuns
+      .map((run) => run?.data?.text || "")
+      .join("\n---\n")
+      .trim(),
   };
 };
 
@@ -273,8 +282,13 @@ exports.detectNumberPlate = async (req, res) => {
     const originalImageBuffer = Buffer.from(base64, "base64");
 
     let detectionImageBuffer = originalImageBuffer;
-    let detectorMeta = { detector: "tesseract-only", localized: false, bbox: null };
+    let detectorMeta = {
+      detector: "tesseract-only",
+      localized: false,
+      bbox: null,
+    };
 
+    let located = null;
     try {
       const located = await locatePlateWithPython(base64);
       if (located?.found && located?.plateImage) {
@@ -283,31 +297,61 @@ exports.detectNumberPlate = async (req, res) => {
           detector: "opencv-haar-python",
           localized: true,
           bbox: located.bbox || null,
+          plateText: located.plateText || "",
         };
       }
     } catch {
       // Fallback: keep OCR on full frame when Python/OpenCV is unavailable.
     }
 
-    let scan = await detectFromImageBuffer(detectionImageBuffer);
-    const needsFallbackScan = !scan.plate || scan.plateScore < MIN_PLATE_SCORE;
+    let scan;
 
-    // If localized crop is bad, retry on full frame so detection does not fail silently.
-    if (needsFallbackScan && detectorMeta.localized) {
-      const fullFrameScan = await detectFromImageBuffer(originalImageBuffer);
-      if (
-        fullFrameScan.plateScore > scan.plateScore ||
-        (fullFrameScan.plateScore === scan.plateScore &&
-          fullFrameScan.confidence > scan.confidence)
-      ) {
-        scan = fullFrameScan;
-        detectorMeta = { detector: "tesseract-full-frame", localized: false, bbox: null };
+    // Use OCR result directly from Python EasyOCR
+    if (located?.plateText) {
+      const normalized = normalizeIndianPlateShape(located.plateText);
+
+      normalized = normalized
+        .replace(/^OO/, "OD")
+        .replace(/4I/, "AM")
+        .replace(/I5/, "15");
+
+      scan = {
+        plate: normalized,
+        confidence: 95,
+        plateScore: scorePlateCandidate(normalized),
+        rawText: located.plateText,
+      };
+    } else {
+      // Fallback to Tesseract OCR
+      scan = await detectFromImageBuffer(detectionImageBuffer);
+
+      const needsFallbackScan =
+        !scan.plate || scan.plateScore < MIN_PLATE_SCORE;
+
+      // Retry on full image if crop OCR fails
+      if (needsFallbackScan && detectorMeta.localized) {
+        const fullFrameScan = await detectFromImageBuffer(originalImageBuffer);
+
+        if (
+          fullFrameScan.plateScore > scan.plateScore ||
+          (fullFrameScan.plateScore === scan.plateScore &&
+            fullFrameScan.confidence > scan.confidence)
+        ) {
+          scan = fullFrameScan;
+
+          detectorMeta = {
+            detector: "tesseract-full-frame",
+            localized: false,
+            bbox: null,
+          };
+        }
       }
     }
     const plate = scan.plate;
     const parsedConfidence = scan.confidence;
     const plateScore = scan.plateScore;
-    const isReliable = parsedConfidence >= MIN_ANPR_CONFIDENCE && plateScore >= MIN_PLATE_SCORE;
+    const isReliable =
+      parsedConfidence >= MIN_ANPR_CONFIDENCE && plateScore >= MIN_PLATE_SCORE;
     let savedDetection = null;
 
     if (plate && isReliable && req.user?._id) {
